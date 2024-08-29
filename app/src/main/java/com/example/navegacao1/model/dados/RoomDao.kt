@@ -80,4 +80,52 @@ class RoomDao {
             }
     }
 
+    fun reservarSala(salaId: String, usuarioId: String, callback: (Boolean) -> Unit) {
+        val salaRef = db.collection("salas").document(salaId)
+
+        db.runTransaction { transaction ->
+            val sala = transaction.get(salaRef).toObject<Room>()
+            if (sala != null) {
+                // Verifica se a sala já está reservada
+                if (sala.reservadoPor != null) {
+                    throw Exception("Sala já está reservada.")
+                }
+
+                // Atualiza o campo reservadoPor com o ID do usuário
+                sala.reservadoPor = usuarioId
+                transaction.set(salaRef, sala)
+            } else {
+                throw Exception("Sala não encontrada.")
+            }
+        }.addOnSuccessListener {
+            callback(true)
+        }.addOnFailureListener {
+            callback(false)
+        }
+    }
+
+    fun cancelarReservaSala(salaId: String, callback: (Boolean) -> Unit) {
+        val salaRef = db.collection("salas").document(salaId)
+
+        db.runTransaction { transaction ->
+            val sala = transaction.get(salaRef).toObject<Room>()
+            if (sala != null) {
+                // Verifica se a sala não está reservada
+                if (sala.reservadoPor == null) {
+                    throw Exception("Sala não está reservada.")
+                }
+
+                // Limpa o campo reservadoPor
+                sala.reservadoPor = null
+                transaction.set(salaRef, sala)
+            } else {
+                throw Exception("Sala não encontrada.")
+            }
+        }.addOnSuccessListener {
+            callback(true)
+        }.addOnFailureListener {
+            callback(false)
+        }
+    }
+
 }

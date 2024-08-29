@@ -7,5 +7,6 @@ data class Room (
     val id: String? = null,
     val nome: String = "",
     val descricao: String = "",
-    val reservada: Boolean = false
+    val reservada: Boolean = false,
+    var reservadoPor: String? = null
 )
