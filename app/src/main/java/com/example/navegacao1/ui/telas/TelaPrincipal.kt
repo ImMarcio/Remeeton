@@ -15,9 +15,12 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -26,32 +29,40 @@ import androidx.navigation.compose.rememberNavController
 import com.example.navegacao1.model.dados.Room
 import com.example.navegacao1.model.dados.RoomDao
 import com.example.navegacao1.model.dados.Usuario
+import com.example.navegacao1.model.dados.UsuarioDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun TelaPrincipal(navController: NavController, modifier: Modifier = Modifier, onLogoffClick: () -> Unit) {
+fun TelaPrincipal(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+    onLogoffClick: () -> Unit) {
     val context = LocalContext.current
     var scope = rememberCoroutineScope()
 
+    var usuarios by remember { mutableStateOf<List<Usuario>>(emptyList()) }
+    var salas by remember { mutableStateOf<List<Room>>(emptyList()) }
+    val usuarioDAO = UsuarioDAO()
+    val roomDAO = RoomDao()
+    // Função para carregar as salas e usuários
+    fun carregarDados() {
+        scope.launch(Dispatchers.IO) {
+            usuarioDAO.buscarUsuarios { usuariosRetornados ->
+                usuarios = usuariosRetornados
+            }
+            roomDAO.buscarSalas { salasRetornadas ->
+                salas = salasRetornadas
+            }
+        }
+    }
+
     Column(modifier = modifier) {
         Text(text = "Tela Principal")
-        val usuarios = remember { mutableStateListOf<Usuario>() }
-        val salas = remember { mutableStateListOf<Room>() }
+
         Row {
             Button(onClick = {
-                scope.launch(Dispatchers.IO) {
-                    usuarioDAO.buscarUsuarios( callback = { usuariosRetornados ->
-                        usuarios.clear()
-                        usuarios.addAll(usuariosRetornados)
-                    })
-                    roomDao.buscarSalas ( callback = { salasRetornadas ->
-                        salas.clear()
-                        salas.addAll(salasRetornadas)
-                    })
-
-
-                }
+                carregarDados()
             }) {
                 Text("Carregar")
             }
