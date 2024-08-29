@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(
                     topBar = {
                         TopAppBar(
-                            title = { Text("Login") },
+                            title = { Text("RemeetOn") },
                             Modifier.background(MaterialTheme.colorScheme.secondary)
                         )
                     },
@@ -100,8 +100,8 @@ class MainActivity : ComponentActivity() {
                                 EditarUsuarioView(
                                     usuarioId = it,
                                     navController = navController,
-                                    onEditClick = {
-                                        navController.navigate("principal")
+                                    onEditClick = {usuarioId ->
+                                        navController.navigate("principal/$usuarioId")
                                     })
                         }
 

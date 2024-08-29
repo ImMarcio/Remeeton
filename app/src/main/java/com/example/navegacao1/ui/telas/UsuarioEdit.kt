@@ -19,8 +19,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.navegacao1.model.dados.PreferencesUtil
 import com.example.navegacao1.model.dados.Usuario
 import com.example.navegacao1.model.dados.UsuarioDAO
 import kotlinx.coroutines.Dispatchers
@@ -30,8 +32,13 @@ import kotlinx.coroutines.launch
 fun EditarUsuarioView(
     usuarioId: String,
     navController: NavController,
-    onEditClick: () -> Unit
+    onEditClick: (String) -> Unit
 ) {
+    val context = LocalContext.current
+
+    val preferencesUtil = remember { PreferencesUtil(context) }
+    val currentUserId = preferencesUtil.currentUserId
+
     var usuario by remember { mutableStateOf<Usuario?>(null) }
     var nome by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -79,7 +86,9 @@ fun EditarUsuarioView(
                             usuarioDAO.atualizarUsuario(usuarioAtual) { sucesso ->
                                 if (sucesso) {
                                     println("Usuário atualizado com sucesso.")
-                                    onEditClick()
+                                    if (currentUserId != null) {
+                                        onEditClick(currentUserId)
+                                    }
                                 } else {
                                     println("Falha ao atualizar o usuário.")
                                 }
