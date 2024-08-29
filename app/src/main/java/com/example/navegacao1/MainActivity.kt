@@ -89,8 +89,8 @@ class MainActivity : ComponentActivity() {
                                 EditarSalaView(
                                     roomDao,
                                     salaId =  it,
-                                    onEditClick = {
-                                        navController.navigate("principal")
+                                    onEditClick = { usuarioId ->
+                                        navController.navigate("principal/$usuarioId")
                                     })
                             }
                         }

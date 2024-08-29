@@ -23,14 +23,24 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
+import com.example.navegacao1.model.dados.PreferencesUtil
 import com.example.navegacao1.model.dados.RoomDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
 @Composable
-fun EditarSalaView(roomDao: RoomDao, salaId: String, onEditClick: () -> Unit) {
+fun EditarSalaView(
+    roomDao: RoomDao,
+    salaId: String,
+    onEditClick: (String) -> Unit) {
+    val context = LocalContext.current
+
+    val preferencesUtil = remember { PreferencesUtil(context) }
+    val currentUserId = preferencesUtil.currentUserId
+
     val scope = rememberCoroutineScope()
     var sala by remember { mutableStateOf<Room?>(null) }
     var nome by remember { mutableStateOf("") }
@@ -86,7 +96,9 @@ fun EditarSalaView(roomDao: RoomDao, salaId: String, onEditClick: () -> Unit) {
                     )
                     roomDao.editarSala(salaId, novosDados) { sucesso ->
                         if (sucesso) {
-                            onEditClick()
+                            if (currentUserId != null) {
+                                onEditClick(currentUserId)
+                            }
                         } else {
                             // Exibir uma mensagem de erro
                         }
