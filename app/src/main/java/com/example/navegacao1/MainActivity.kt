@@ -65,6 +65,7 @@ class MainActivity : ComponentActivity() {
                             usuarioId?.let {
                                 TelaPrincipal(
                                     navController = navController,
+                                    usuarioId = it,
                                     modifier = Modifier.padding(innerPadding),
                                     onLogoffClick = {
                                         navController.navigate("login")

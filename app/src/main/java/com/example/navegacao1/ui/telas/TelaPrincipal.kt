@@ -16,7 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -25,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.navegacao1.model.dados.Room
 import com.example.navegacao1.model.dados.RoomDao
 import com.example.navegacao1.model.dados.Usuario
@@ -37,7 +35,9 @@ import kotlinx.coroutines.launch
 fun TelaPrincipal(
     navController: NavController,
     modifier: Modifier = Modifier,
-    onLogoffClick: () -> Unit) {
+    onLogoffClick: () -> Unit,
+    usuarioId: String
+) {
     val context = LocalContext.current
     var scope = rememberCoroutineScope()
 
@@ -88,6 +88,18 @@ fun TelaPrincipal(
     }
 
 
+    // Função para reservar sala
+    fun reservarSala(salaId: String) {
+        roomDAO.reservarSala(salaId, usuarioId) { sucesso ->
+            if (sucesso) {
+                mensagemSucesso = "Sala reservada com sucesso."
+                carregarDados() // Recarregar dados após reserva
+            } else {
+                mensagemErro = "Falha ao reservar a sala."
+            }
+        }
+    }
+
     Column(modifier = modifier) {
         Text(text = "Tela Principal")
 
@@ -120,11 +132,7 @@ fun TelaPrincipal(
                         Text(text = usuario.email, style = MaterialTheme.typography.bodyMedium)
                         Spacer(modifier = Modifier.height(8.dp))
                         Row {
-                            Button(onClick = {
-                                 usuario.id?.let { excluirUsuario(it) }
-                            }
-
-                            )
+                            Button(onClick = { usuario.id?.let { excluirUsuario(it) }})
                             {
                                 Text(text = "Excluir")
                             }
@@ -142,46 +150,12 @@ fun TelaPrincipal(
                     }
                 }
             }
-//            items(salas) { sala ->
-//                Card(modifier = Modifier.fillMaxWidth()) {
-//                    Column {
-//                        Text(text = sala.nome)
-//                        Row {
-//                            Button(onClick = {
-//                                scope.launch(Dispatchers.IO) {
-//                                    sala.id?.let { id ->
-//                                        roomDao.excluirSalaPorId(id) { sucesso ->
-//                                            if (sucesso) {
-//                                                println("Sala excluída com sucesso.")
-//                                            } else {
-//                                                println("Falha ao excluir a sala.")
-//                                            }
-//                                        }
-//                                    }
-//                                }
-//                            }) {
-//                                Text(text = "Excluir")
-//                            }
-//
-//                            Spacer(modifier = Modifier.width(8.dp))
-//
-//                            Button(onClick = {
-//                                sala.id?.let { id ->
-//                                    navController.navigate("editar_sala/$id")
-//                                }
-//                            }) {
-//                                Text(text = "Editar")
-//                            }
-//
-//                    }
-//                }
-//            }
-//        }
+
     }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Salas", style = MaterialTheme.typography.titleMedium)
+        Text(text = "Salas $usuarioId", style = MaterialTheme.typography.titleMedium)
 
         LazyColumn {
             items(salas) { sala ->
@@ -196,12 +170,19 @@ fun TelaPrincipal(
                         Spacer(modifier = Modifier.height(8.dp))
                         Row {
                             Button(
-                                onClick = {
-                                    sala.id?.let { excluirSala(it) }
-                                },
+                                onClick = { sala.id?.let { excluirSala(it) } },
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                             ) {
                                 Text(text = "Excluir")
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+
+
+                            Button(
+                                onClick = { sala.id?.let { reservarSala(it) } },
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                            ) {
+                                Text(text = "Reservar")
                             }
 
                             Spacer(modifier = Modifier.width(8.dp))
