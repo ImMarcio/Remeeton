@@ -81,4 +81,20 @@ class UsuarioDAO {
                 callback(null)
             }
     }
+    fun buscarUsuarioPorEmail(email: String, callback: (Usuario?) -> Unit) {
+        db.collection("usuarios").whereEqualTo("email", email).get()
+            .addOnSuccessListener { document ->
+                if (!document.isEmpty) {
+                    val usuario = document.documents[0].toObject<Usuario>()
+                    callback(usuario)
+                } else {
+                    callback(null)
+                }
+            }
+            .addOnFailureListener {
+                callback(null)
+            }
+    }
+
+
 }

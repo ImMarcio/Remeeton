@@ -7,5 +7,6 @@ data class Usuario(
     val id: String? = null,
     var nome: String = "",
     var email: String = "",
-    val senha: String = ""
+    val senha: String = "",
+    val salas: List<String> = mutableListOf()
 )
