@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.navegacao1.model.dados.PreferencesUtil
 import com.example.navegacao1.model.dados.Room
 import com.example.navegacao1.model.dados.RoomDao
 import com.example.navegacao1.model.dados.Usuario
@@ -41,10 +42,15 @@ fun TelaPrincipal(
     val context = LocalContext.current
     var scope = rememberCoroutineScope()
 
+    val preferencesUtil = remember { PreferencesUtil(context) }
+    val currentUserId = preferencesUtil.currentUserId
+
     var usuarios by remember { mutableStateOf<List<Usuario>>(emptyList()) }
     var salas by remember { mutableStateOf<List<Room>>(emptyList()) }
+
     val usuarioDAO = UsuarioDAO()
     val roomDAO = RoomDao()
+
     var mensagemErro by remember { mutableStateOf<String?>(null) }
     var mensagemSucesso by remember { mutableStateOf<String?>(null) }
     // Função para carregar as salas e usuários
@@ -166,7 +172,7 @@ fun TelaPrincipal(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Salas $usuarioId", style = MaterialTheme.typography.titleMedium)
+        Text(text = "Salas $usuarioId  user: $currentUserId", style = MaterialTheme.typography.titleMedium)
 
         LazyColumn {
             items(salas) { sala ->

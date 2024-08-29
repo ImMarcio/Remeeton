@@ -6,7 +6,7 @@ import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
 
 //classe que pega dados do Firestore
-class UsuarioDAO {
+ class  UsuarioDAO {
 
     val db = FirebaseFirestore.getInstance()
 

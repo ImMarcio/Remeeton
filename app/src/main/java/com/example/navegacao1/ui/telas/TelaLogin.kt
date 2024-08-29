@@ -20,9 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.navegacao1.model.dados.PreferencesUtil
 import com.example.navegacao1.model.dados.UsuarioDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+
 
 val usuarioDAO: UsuarioDAO = UsuarioDAO()
 
@@ -34,6 +36,8 @@ fun TelaLogin(
     onRegisterRoomClick: () -> Unit) {
 
     val context = LocalContext.current
+    val preferencesUtil = remember { PreferencesUtil(context) }
+
     val scope = rememberCoroutineScope()
 
     var login by remember {mutableStateOf("")}
@@ -45,8 +49,9 @@ fun TelaLogin(
         scope.launch(Dispatchers.IO) {
             usuarioDAO.buscarUsuarioPorEmail(email) { usuario ->
                 if (usuario != null && usuario.senha == senha) {
+                    preferencesUtil.currentUserId = usuario.id
                     // Navegar para a tela principal com o ID do usuário
-                    usuario.id?.let { onSigninClick(it) } // Passa o usuário autenticado
+                    usuario.id?.let {onSigninClick(it) } // Passa o usuário autenticado
                 } else {
                     mensagemErro = "Login ou senha inválidos!"
                 }
