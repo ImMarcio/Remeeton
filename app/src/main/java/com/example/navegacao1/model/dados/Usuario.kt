@@ -5,7 +5,7 @@ import com.google.firebase.firestore.DocumentId
 data class Usuario(
     @DocumentId
     val id: String? = null,
-    val nome: String = "",
-    val email: String = "",
+    var nome: String = "",
+    var email: String = "",
     val senha: String = ""
 )
