@@ -4,11 +4,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
@@ -34,31 +38,45 @@ fun TelaPrincipal(navController: NavController, modifier: Modifier = Modifier, o
         Text(text = "Tela Principal")
         val usuarios = remember { mutableStateListOf<Usuario>() }
         val salas = remember { mutableStateListOf<Room>() }
-        Button(onClick = {
-            scope.launch(Dispatchers.IO) {
-                usuarioDAO.buscarUsuarios( callback = { usuariosRetornados ->
-                    usuarios.clear()
-                    usuarios.addAll(usuariosRetornados)
-                })
-                roomDao.buscarSalas ( callback = { salasRetornadas ->
-                    salas.clear()
-                    salas.addAll(salasRetornadas)
-                 })
+        Row {
+            Button(onClick = {
+                scope.launch(Dispatchers.IO) {
+                    usuarioDAO.buscarUsuarios( callback = { usuariosRetornados ->
+                        usuarios.clear()
+                        usuarios.addAll(usuariosRetornados)
+                    })
+                    roomDao.buscarSalas ( callback = { salasRetornadas ->
+                        salas.clear()
+                        salas.addAll(salasRetornadas)
+                    })
 
 
+                }
+            }) {
+                Text("Carregar")
             }
-        }) {
-            Text("Carregar")
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Button(onClick = { onLogoffClick() }) {
+                Text("Sair")
+            }
         }
-        Button(onClick = { onLogoffClick() }) {
-            Text("Sair")
-        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(text = "Usuários", style = MaterialTheme.typography.titleMedium)
+
 
         LazyColumn {
             items(usuarios) { usuario ->
-                Card(modifier = Modifier.fillMaxWidth()) {
+                Card(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                    shape = MaterialTheme.shapes.medium) {
                     Column {
-                        Text(text = usuario.nome)
+                        Text(text = usuario.nome, style = MaterialTheme.typography.titleMedium)
+                        Text(text = usuario.email, style = MaterialTheme.typography.bodyMedium)
+                        Spacer(modifier = Modifier.height(8.dp))
                         Row {
                             Button(onClick = {
                                 scope.launch(Dispatchers.IO) {
@@ -72,7 +90,10 @@ fun TelaPrincipal(navController: NavController, modifier: Modifier = Modifier, o
                                         }
                                     }
                                 }
-                            }) {
+                            }
+
+                            )
+                            {
                                 Text(text = "Excluir")
                             }
 
@@ -89,43 +110,94 @@ fun TelaPrincipal(navController: NavController, modifier: Modifier = Modifier, o
                     }
                 }
             }
+//            items(salas) { sala ->
+//                Card(modifier = Modifier.fillMaxWidth()) {
+//                    Column {
+//                        Text(text = sala.nome)
+//                        Row {
+//                            Button(onClick = {
+//                                scope.launch(Dispatchers.IO) {
+//                                    sala.id?.let { id ->
+//                                        roomDao.excluirSalaPorId(id) { sucesso ->
+//                                            if (sucesso) {
+//                                                println("Sala excluída com sucesso.")
+//                                            } else {
+//                                                println("Falha ao excluir a sala.")
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//                            }) {
+//                                Text(text = "Excluir")
+//                            }
+//
+//                            Spacer(modifier = Modifier.width(8.dp))
+//
+//                            Button(onClick = {
+//                                sala.id?.let { id ->
+//                                    navController.navigate("editar_sala/$id")
+//                                }
+//                            }) {
+//                                Text(text = "Editar")
+//                            }
+//
+//                    }
+//                }
+//            }
+//        }
+    }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(text = "Salas", style = MaterialTheme.typography.titleMedium)
+
+        LazyColumn {
             items(salas) { sala ->
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column {
-                        Text(text = sala.nome)
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(text = sala.nome, style = MaterialTheme.typography.titleMedium)
+                        Spacer(modifier = Modifier.height(8.dp))
                         Row {
-                            Button(onClick = {
-                                scope.launch(Dispatchers.IO) {
-                                    sala.id?.let { id ->
-                                        roomDao.excluirSalaPorId(id) { sucesso ->
-                                            if (sucesso) {
-                                                println("Sala excluída com sucesso.")
-                                            } else {
-                                                println("Falha ao excluir a sala.")
+                            Button(
+                                onClick = {
+                                    scope.launch(Dispatchers.IO) {
+                                        sala.id?.let { id ->
+                                            roomDao.excluirSalaPorId(id) { sucesso ->
+                                                if (sucesso) {
+                                                    println("Sala excluída com sucesso.")
+                                                } else {
+                                                    println("Falha ao excluir a sala.")
+                                                }
                                             }
                                         }
                                     }
-                                }
-                            }) {
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                            ) {
                                 Text(text = "Excluir")
                             }
 
                             Spacer(modifier = Modifier.width(8.dp))
 
-                            Button(onClick = {
-                                sala.id?.let { id ->
-                                    navController.navigate("editar_sala/$id")
+                            Button(
+                                onClick = {
+                                    sala.id?.let { id ->
+                                        navController.navigate("editar_sala/$id")
+                                    }
                                 }
-                            }) {
+                            ) {
                                 Text(text = "Editar")
                             }
-
+                        }
                     }
                 }
             }
         }
-    }
-
 }
 
 }

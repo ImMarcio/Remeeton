@@ -19,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.navegacao1.ui.telas.EditarSalaView
+import com.example.navegacao1.ui.telas.EditarUsuarioView
 import com.example.navegacao1.ui.telas.SalaRegister
 import com.example.navegacao1.ui.telas.TelaLogin
 import com.example.navegacao1.ui.telas.TelaPrincipal
@@ -85,6 +86,16 @@ class MainActivity : ComponentActivity() {
                                     })
                             }
                         }
+                        composable("editar_usuario/{usuarioId}") { backStackEntry ->
+                            val usuarioId  = backStackEntry.arguments?.getString("usuarioId")
+                            usuarioId?.let {
+                                EditarUsuarioView(
+                                    usuarioId = it,
+                                    navController = navController,
+                                    onEditClick = {
+                                        navController.navigate("principal")
+                                    })
+                        }
 
                         }
                     }
@@ -106,4 +117,5 @@ fun GreetingPreview() {
     Navegacao1Theme {
 //       TelaLogin()
     }
+}
 }
