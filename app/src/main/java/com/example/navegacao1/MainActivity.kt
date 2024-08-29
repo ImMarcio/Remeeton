@@ -49,8 +49,8 @@ class MainActivity : ComponentActivity() {
                         composable("login") {
                             TelaLogin(
                                 modifier = Modifier.padding(innerPadding),
-                                onSigninClick = {
-                                    navController.navigate("principal")
+                                onSigninClick = { usuarioId ->
+                                    navController.navigate("principal/$usuarioId")
                                 },
                                 onRegisterClick = {
                                     navController.navigate("cadastro")
@@ -60,10 +60,17 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
-                        composable("principal") {
-                            TelaPrincipal( navController = navController, modifier = Modifier.padding(innerPadding), onLogoffClick = {
-                                navController.navigate("login")
-                            })
+                        composable("principal/{usuarioId}") { backStackEntry ->
+                            val usuarioId = backStackEntry.arguments?.getString("usuarioId")
+                            usuarioId?.let {
+                                TelaPrincipal(
+                                    navController = navController,
+                                    modifier = Modifier.padding(innerPadding),
+                                    onLogoffClick = {
+                                        navController.navigate("login")
+                                    }
+                                )
+                            }
                         }
                         composable("cadastro") {
                             TelaRegister(modifier = Modifier.padding(innerPadding), onRegisterClick  = {

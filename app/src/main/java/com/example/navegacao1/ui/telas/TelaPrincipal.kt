@@ -45,6 +45,8 @@ fun TelaPrincipal(
     var salas by remember { mutableStateOf<List<Room>>(emptyList()) }
     val usuarioDAO = UsuarioDAO()
     val roomDAO = RoomDao()
+    var mensagemErro by remember { mutableStateOf<String?>(null) }
+    var mensagemSucesso by remember { mutableStateOf<String?>(null) }
     // Função para carregar as salas e usuários
     fun carregarDados() {
         scope.launch(Dispatchers.IO) {
@@ -56,6 +58,35 @@ fun TelaPrincipal(
             }
         }
     }
+
+    // Função para excluir usuário
+    fun excluirUsuario(id: String) {
+        scope.launch(Dispatchers.IO) {
+            usuarioDAO.excluirUsuarioPorId(id) { sucesso ->
+                if (sucesso) {
+                    mensagemSucesso = "Usuário excluído com sucesso."
+                    carregarDados() // Recarregar dados após exclusão
+                } else {
+                    mensagemErro = "Falha ao excluir o usuário."
+                }
+            }
+        }
+    }
+
+    // Função para excluir sala
+    fun excluirSala(id: String) {
+        scope.launch(Dispatchers.IO) {
+            roomDAO.excluirSalaPorId(id) { sucesso ->
+                if (sucesso) {
+                    mensagemSucesso = "Sala excluída com sucesso."
+                    carregarDados() // Recarregar dados após exclusão
+                } else {
+                    mensagemErro = "Falha ao excluir a sala."
+                }
+            }
+        }
+    }
+
 
     Column(modifier = modifier) {
         Text(text = "Tela Principal")
@@ -90,17 +121,7 @@ fun TelaPrincipal(
                         Spacer(modifier = Modifier.height(8.dp))
                         Row {
                             Button(onClick = {
-                                scope.launch(Dispatchers.IO) {
-                                    usuario.id?.let { id ->
-                                        usuarioDAO.excluirUsuarioPorId(id) { sucesso ->
-                                            if (sucesso) {
-                                                println("Usuário excluído com sucesso.")
-                                            } else {
-                                                println("Falha ao excluir o usuário.")
-                                            }
-                                        }
-                                    }
-                                }
+                                 usuario.id?.let { excluirUsuario(it) }
                             }
 
                             )
@@ -176,17 +197,7 @@ fun TelaPrincipal(
                         Row {
                             Button(
                                 onClick = {
-                                    scope.launch(Dispatchers.IO) {
-                                        sala.id?.let { id ->
-                                            roomDao.excluirSalaPorId(id) { sucesso ->
-                                                if (sucesso) {
-                                                    println("Sala excluída com sucesso.")
-                                                } else {
-                                                    println("Falha ao excluir a sala.")
-                                                }
-                                            }
-                                        }
-                                    }
+                                    sala.id?.let { excluirSala(it) }
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                             ) {
