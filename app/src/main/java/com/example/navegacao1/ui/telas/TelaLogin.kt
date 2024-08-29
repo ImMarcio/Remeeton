@@ -29,7 +29,7 @@ val usuarioDAO: UsuarioDAO = UsuarioDAO()
 @Composable
 fun TelaLogin(
     modifier: Modifier = Modifier,
-    onSigninClick: () -> Unit,
+    onSigninClick: (String) -> Unit,
     onRegisterClick: () -> Unit,
     onRegisterRoomClick: () -> Unit) {
 
@@ -40,7 +40,19 @@ fun TelaLogin(
     var senha by remember {mutableStateOf("")}
     var mensagemErro by remember { mutableStateOf<String?>(null) }
 
-
+    // Função de login
+    fun login(email: String, senha: String) {
+        scope.launch(Dispatchers.IO) {
+            usuarioDAO.buscarUsuarioPorEmail(email) { usuario ->
+                if (usuario != null && usuario.senha == senha) {
+                    // Navegar para a tela principal com o ID do usuário
+                    usuario.id?.let { onSigninClick(it) } // Passa o usuário autenticado
+                } else {
+                    mensagemErro = "Login ou senha inválidos!"
+                }
+            }
+        }
+    }
 
 
 
@@ -62,15 +74,7 @@ fun TelaLogin(
         Button(
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-            scope.launch(Dispatchers.IO) {
-                usuarioDAO.buscarUsuarioPorNome(login, callback = { usuario ->
-                    if (usuario != null && usuario.senha == senha) {
-                        onSigninClick()
-                    } else {
-                        mensagemErro = "Login ou senha inválidos!"
-                    }
-                })
-            }
+                login(login,senha)
         }) {
             Text("Entrar")
         }
