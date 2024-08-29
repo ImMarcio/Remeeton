@@ -133,6 +133,11 @@ fun TelaPrincipal(
             Button(onClick = { onLogoffClick() }) {
                 Text("Sair")
             }
+            Button(onClick = {
+                navController.navigate("cadastro-sala")
+            }) {
+                Text("Cadastrar Sala")
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))

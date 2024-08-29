@@ -79,8 +79,10 @@ class MainActivity : ComponentActivity() {
                             })
                         }
                         composable("cadastro-sala") {
-                            SalaRegister(modifier = Modifier.padding(innerPadding), onRegisterRoomClick  = {
-                                navController.navigate("login")
+                            SalaRegister(modifier = Modifier.padding(innerPadding),
+                                onRegisterRoomClick  = {
+                                usuarioId ->
+                                navController.navigate("principal/$usuarioId")
                             })
                         }
                         composable("editar_sala/{salaId}") { backStackEntry ->

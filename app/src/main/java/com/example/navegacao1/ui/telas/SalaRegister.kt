@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.navegacao1.model.dados.PreferencesUtil
 import com.example.navegacao1.model.dados.Room
 import com.example.navegacao1.model.dados.RoomDao
 import com.example.navegacao1.model.dados.Usuario
@@ -31,9 +32,11 @@ val roomDao = RoomDao()
 @Composable
 fun SalaRegister(
     modifier: Modifier,
-    onRegisterRoomClick: () -> Unit ) {
+    onRegisterRoomClick: (String) -> Unit ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val preferencesUtil = remember { PreferencesUtil(context) }
+    val currentUserId = preferencesUtil.currentUserId
 
     var nome by remember { mutableStateOf("") }
     var descricao by remember { mutableStateOf("") }
@@ -64,7 +67,9 @@ fun SalaRegister(
                     scope.launch(Dispatchers.IO) {
                         roomDao.adicionar(sala){ sucesso ->
                             if(sucesso) {
-                                onRegisterRoomClick()
+                                if (currentUserId != null) {
+                                    onRegisterRoomClick(currentUserId)
+                                }
                             } else{
                                 mensagemErro = "Erro ao cadastrar Sala!"
                             }
