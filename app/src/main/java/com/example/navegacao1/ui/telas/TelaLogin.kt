@@ -83,6 +83,13 @@ fun TelaLogin(
         }) {
             Text("Entrar")
         }
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                onRegisterClick()
+            }) {
+            Text("Cadastre-se")
+        }
 
         mensagemErro?.let {
             LaunchedEffect(it) {

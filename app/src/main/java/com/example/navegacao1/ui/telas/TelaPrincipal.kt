@@ -119,6 +119,8 @@ fun TelaPrincipal(
 
     Column(modifier = modifier) {
         Text(text = "Tela Principal")
+        mensagemSucesso?.let { Text(text = it, style = MaterialTheme.typography.titleMedium) }
+        mensagemErro?.let { Text(text = it, style = MaterialTheme.typography.titleMedium) }
 
         Row {
             Button(onClick = {
@@ -172,7 +174,8 @@ fun TelaPrincipal(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(text = "Salas $usuarioId  user: $currentUserId", style = MaterialTheme.typography.titleMedium)
+//        Text(text = "Salas $usuarioId  user: $currentUserId", style = MaterialTheme.typography.titleMedium)
+          Text(text = "Salas ", style = MaterialTheme.typography.titleMedium)
 
         LazyColumn {
             items(salas) { sala ->
