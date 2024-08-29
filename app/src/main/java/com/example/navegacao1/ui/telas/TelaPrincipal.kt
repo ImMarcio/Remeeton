@@ -99,6 +99,17 @@ fun TelaPrincipal(
             }
         }
     }
+    // Função para desmarcar sala
+    fun desmarcarSala(salaId: String) {
+        usuarioDAO.cancelarReservaSala(usuarioId, salaId) { sucesso ->
+            if (sucesso) {
+                mensagemSucesso = "Reserva cancelada com sucesso."
+                carregarDados() // Recarregar dados após cancelamento
+            } else {
+                mensagemErro = "Falha ao cancelar a reserva."
+            }
+        }
+    }
 
     Column(modifier = modifier) {
         Text(text = "Tela Principal")
@@ -167,6 +178,10 @@ fun TelaPrincipal(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(text = sala.nome, style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            text = if (sala.reservadoPor == null) "Disponível" else "Reservada",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                         Spacer(modifier = Modifier.height(8.dp))
                         Row {
                             Button(
@@ -183,6 +198,13 @@ fun TelaPrincipal(
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                             ) {
                                 Text(text = "Reservar")
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Button(
+                                onClick = { sala.id?.let { desmarcarSala(it) } },
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                            ) {
+                                Text(text = "Unreserva")
                             }
 
                             Spacer(modifier = Modifier.width(8.dp))
