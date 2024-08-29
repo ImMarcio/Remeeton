@@ -18,10 +18,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.navegacao1.ui.telas.EditarSalaView
 import com.example.navegacao1.ui.telas.SalaRegister
 import com.example.navegacao1.ui.telas.TelaLogin
 import com.example.navegacao1.ui.telas.TelaPrincipal
 import com.example.navegacao1.ui.telas.TelaRegister
+import com.example.navegacao1.ui.telas.roomDao
 import com.example.navegacao1.ui.theme.Navegacao1Theme
 import com.google.firebase.FirebaseApp
 
@@ -58,7 +60,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("principal") {
-                            TelaPrincipal(modifier = Modifier.padding(innerPadding), onLogoffClick = {
+                            TelaPrincipal( navController = navController, modifier = Modifier.padding(innerPadding), onLogoffClick = {
                                 navController.navigate("login")
                             })
                         }
@@ -71,6 +73,17 @@ class MainActivity : ComponentActivity() {
                             SalaRegister(modifier = Modifier.padding(innerPadding), onRegisterRoomClick  = {
                                 navController.navigate("login")
                             })
+                        }
+                        composable("editar_sala/{salaId}") { backStackEntry ->
+                            val salaId = backStackEntry.arguments?.getString("salaId")
+                            salaId?.let {
+                                EditarSalaView(
+                                    roomDao,
+                                    salaId =  it,
+                                    onEditClick = {
+                                        navController.navigate("principal")
+                                    })
+                            }
                         }
 
                         }

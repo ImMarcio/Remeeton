@@ -55,4 +55,29 @@ class RoomDao {
             }
     }
 
+    fun editarSala(id: String, novosDados: Map<String, Any>, callback: (Boolean) -> Unit) {
+        db.collection("salas").document(id).update(novosDados)
+            .addOnSuccessListener {
+                callback(true)
+            }
+            .addOnFailureListener {
+                callback(false)
+            }
+    }
+
+    fun buscarSalaPorId(id: String, callback: (Room?) -> Unit) {
+        db.collection("salas").document(id).get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val sala = document.toObject<Room>()
+                    callback(sala)
+                } else {
+                    callback(null)
+                }
+            }
+            .addOnFailureListener {
+                callback(null)
+            }
+    }
+
 }

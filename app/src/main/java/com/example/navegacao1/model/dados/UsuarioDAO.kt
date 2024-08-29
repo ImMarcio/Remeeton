@@ -46,4 +46,26 @@ class UsuarioDAO {
             }
     }
 
+    fun atualizarUsuario(usuario: Usuario, callback: (Boolean) -> Unit) {
+        usuario.id?.let { id ->
+            db.collection("usuarios").document(id).set(usuario)
+                .addOnSuccessListener {
+                    callback(true)
+                }
+                .addOnFailureListener {
+                    callback(false)
+                }
+        } ?: callback(false)
+    }
+
+    fun excluirUsuarioPorId(id: String, callback: (Boolean) -> Unit) {
+        db.collection("usuarios").document(id).delete()
+            .addOnSuccessListener {
+                callback(true)
+            }
+            .addOnFailureListener {
+                callback(false)
+            }
+    }
+
 }
