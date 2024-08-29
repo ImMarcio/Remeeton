@@ -92,6 +92,7 @@ class RoomDao {
                 }
 
                 // Atualiza o campo reservadoPor com o ID do usuário
+
                 sala.reservadoPor = usuarioId
                 transaction.set(salaRef, sala)
             } else {

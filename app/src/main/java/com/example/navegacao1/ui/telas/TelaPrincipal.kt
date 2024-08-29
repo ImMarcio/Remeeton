@@ -90,7 +90,7 @@ fun TelaPrincipal(
 
     // Função para reservar sala
     fun reservarSala(salaId: String) {
-        roomDAO.reservarSala(salaId, usuarioId) { sucesso ->
+        usuarioDAO.reservarSala(salaId, usuarioId) { sucesso ->
             if (sucesso) {
                 mensagemSucesso = "Sala reservada com sucesso."
                 carregarDados() // Recarregar dados após reserva
