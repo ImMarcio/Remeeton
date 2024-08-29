@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "991830211172",
+    "project_id": "remeetvon",
+    "storage_bucket": "remeetvon.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:991830211172:android:8614082e6a1d924ef9fd71",
+        "android_client_info": {
+          "package_name": "edu.ifpb.pdm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnxAumg5Oaz7y8MGA5XZBOY3YHm40WevY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

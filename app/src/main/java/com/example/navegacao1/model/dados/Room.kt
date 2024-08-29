@@ -1,0 +1,11 @@
+package com.example.navegacao1.model.dados
+
+import com.google.firebase.firestore.DocumentId
+
+data class Room (
+    @DocumentId
+    val id: String? = null,
+    val nome: String = "",
+    val descricao: String = "",
+    val reservada: Boolean = false
+)
