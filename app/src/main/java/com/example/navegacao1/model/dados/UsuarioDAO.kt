@@ -96,5 +96,39 @@ class UsuarioDAO {
             }
     }
 
+    // Novo método para cancelar a reserva de uma sala
+    fun cancelarReservaSala(usuarioId: String, salaId: String, callback: (Boolean) -> Unit) {
+        val usuarioRef = db.collection("usuarios").document(usuarioId)
+        val salaRef = db.collection("salas").document(salaId)
+
+        db.runTransaction { transaction ->
+            val usuario = transaction.get(usuarioRef).toObject<Usuario>()
+            val sala = transaction.get(salaRef).toObject<Room>()
+
+            if (usuario != null && sala != null) {
+                // Verifica se a sala está reservada pelo usuário
+                if (sala.reservadoPor != usuarioId) {
+                    throw Exception("Sala não está reservada por este usuário.")
+                }
+
+                // Limpa o campo reservadoPor da sala
+                sala.reservadoPor = null
+                transaction.set(salaRef, sala)
+
+                // Remove a sala da lista de salas reservadas do usuário
+                val salasReservadas = usuario.salas.toMutableList()
+                salasReservadas.remove(salaId)
+                usuario.salas = salasReservadas
+                transaction.set(usuarioRef, usuario)
+            } else {
+                throw Exception("Usuário ou sala não encontrados.")
+            }
+        }.addOnSuccessListener {
+            callback(true)
+        }.addOnFailureListener {
+            callback(false)
+        }
+    }
+
 
 }

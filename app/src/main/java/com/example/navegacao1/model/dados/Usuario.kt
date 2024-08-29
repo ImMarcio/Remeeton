@@ -8,5 +8,5 @@ data class Usuario(
     var nome: String = "",
     var email: String = "",
     val senha: String = "",
-    val salas: List<String> = mutableListOf()
+    var salas: List<String> = mutableListOf()
 )
