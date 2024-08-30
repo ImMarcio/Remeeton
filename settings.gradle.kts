@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Navegacao1"
+rootProject.name = "Remeeton"
 include(":app")
  
