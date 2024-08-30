@@ -43,7 +43,8 @@ class MainActivity : ComponentActivity() {
                             Modifier.background(MaterialTheme.colorScheme.secondary)
                         )
                     },
-                    modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    modifier = Modifier.fillMaxSize()
+                ) { innerPadding ->
                     val navController = rememberNavController()
                     NavHost(navController = navController, startDestination = "login") {
                         composable("login") {
@@ -55,7 +56,7 @@ class MainActivity : ComponentActivity() {
                                 onRegisterClick = {
                                     navController.navigate("cadastro")
                                 },
-                                 onRegisterRoomClick = {
+                                onRegisterRoomClick = {
                                     navController.navigate("cadastro-sala")
                                 }
                             )
@@ -74,38 +75,39 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         composable("cadastro") {
-                            TelaRegister(modifier = Modifier.padding(innerPadding), onRegisterClick  = {
-                                navController.navigate("login")
-                            })
+                            TelaRegister(
+                                modifier = Modifier.padding(innerPadding),
+                                onRegisterClick = {
+                                    navController.navigate("login")
+                                })
                         }
                         composable("cadastro-sala") {
                             SalaRegister(modifier = Modifier.padding(innerPadding),
-                                onRegisterRoomClick  = {
-                                usuarioId ->
-                                navController.navigate("principal/$usuarioId")
-                            })
+                                onRegisterRoomClick = { usuarioId ->
+                                    navController.navigate("principal/$usuarioId")
+                                })
                         }
                         composable("editar_sala/{salaId}") { backStackEntry ->
                             val salaId = backStackEntry.arguments?.getString("salaId")
                             salaId?.let {
                                 EditarSalaView(
                                     roomDao,
-                                    salaId =  it,
+                                    salaId = it,
                                     onEditClick = { usuarioId ->
                                         navController.navigate("principal/$usuarioId")
                                     })
                             }
                         }
                         composable("editar_usuario/{usuarioId}") { backStackEntry ->
-                            val usuarioId  = backStackEntry.arguments?.getString("usuarioId")
+                            val usuarioId = backStackEntry.arguments?.getString("usuarioId")
                             usuarioId?.let {
                                 EditarUsuarioView(
                                     usuarioId = it,
                                     navController = navController,
-                                    onEditClick = {usuarioId ->
+                                    onEditClick = { usuarioId ->
                                         navController.navigate("principal/$usuarioId")
                                     })
-                        }
+                            }
 
                         }
 
@@ -118,16 +120,16 @@ class MainActivity : ComponentActivity() {
     }
 
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+    @Composable
+    fun Greeting(name: String, modifier: Modifier = Modifier) {
 //    TelaLogin()
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Navegacao1Theme {
-//       TelaLogin()
     }
-}
+
+    @Preview(showBackground = true)
+    @Composable
+    fun GreetingPreview() {
+        Navegacao1Theme {
+//       TelaLogin()
+        }
+    }
 }
