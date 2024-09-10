@@ -1,4 +1,4 @@
-package com.example.navegacao1.model.dados
+package com.example.remeeton.model.dados
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject

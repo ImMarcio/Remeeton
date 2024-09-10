@@ -1,4 +1,4 @@
-package com.example.navegacao1
+package com.example.remeeton
 
 import org.junit.Test
 

@@ -1,4 +1,4 @@
-package com.example.navegacao1.ui.telas
+package com.example.remeeton.ui.telas
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,11 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.navegacao1.model.dados.PreferencesUtil
-import com.example.navegacao1.model.dados.Room
-import com.example.navegacao1.model.dados.RoomDao
-import com.example.navegacao1.model.dados.Usuario
-import com.example.navegacao1.model.dados.UsuarioDAO
+import com.example.remeeton.model.dados.PreferencesUtil
+import com.example.remeeton.model.dados.Room
+import com.example.remeeton.model.dados.RoomDao
+import com.example.remeeton.model.dados.Usuario
+import com.example.remeeton.model.dados.UsuarioDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

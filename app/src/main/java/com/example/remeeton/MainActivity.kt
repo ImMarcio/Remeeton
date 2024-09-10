@@ -1,4 +1,4 @@
-package com.example.navegacao1
+package com.example.remeeton
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,14 +18,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.navegacao1.ui.telas.EditarSalaView
-import com.example.navegacao1.ui.telas.EditarUsuarioView
-import com.example.navegacao1.ui.telas.SalaRegister
-import com.example.navegacao1.ui.telas.TelaLogin
-import com.example.navegacao1.ui.telas.TelaPrincipal
-import com.example.navegacao1.ui.telas.TelaRegister
-import com.example.navegacao1.ui.telas.roomDao
-import com.example.navegacao1.ui.theme.Navegacao1Theme
+import com.example.remeeton.ui.telas.EditarSalaView
+import com.example.remeeton.ui.telas.EditarUsuarioView
+import com.example.remeeton.ui.telas.SalaRegister
+import com.example.remeeton.ui.telas.TelaLogin
+import com.example.remeeton.ui.telas.TelaPrincipal
+import com.example.remeeton.ui.telas.TelaRegister
+import com.example.remeeton.ui.telas.roomDao
+import com.example.remeeton.ui.theme.Navegacao1Theme
 import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {

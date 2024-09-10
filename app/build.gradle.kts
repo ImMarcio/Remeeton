@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.navegacao1"
+    namespace = "com.example.remeeton"
     compileSdk = 34
 
     defaultConfig {

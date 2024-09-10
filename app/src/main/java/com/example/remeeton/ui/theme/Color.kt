@@ -1,4 +1,4 @@
-package com.example.navegacao1.ui.theme
+package com.example.remeeton.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

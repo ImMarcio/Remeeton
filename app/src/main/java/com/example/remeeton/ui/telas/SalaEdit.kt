@@ -1,4 +1,4 @@
-package com.example.navegacao1.ui.telas
+package com.example.remeeton.ui.telas
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -16,7 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import com.example.navegacao1.model.dados.Room
+import com.example.remeeton.model.dados.Room
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Text
@@ -24,9 +23,8 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.KeyboardType
-import com.example.navegacao1.model.dados.PreferencesUtil
-import com.example.navegacao1.model.dados.RoomDao
+import com.example.remeeton.model.dados.PreferencesUtil
+import com.example.remeeton.model.dados.RoomDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

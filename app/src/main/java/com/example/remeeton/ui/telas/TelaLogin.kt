@@ -1,4 +1,4 @@
-package com.example.navegacao1.ui.telas
+package com.example.remeeton.ui.telas
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
@@ -20,64 +20,75 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.example.navegacao1.model.dados.Usuario
-import com.google.firebase.firestore.auth.User
+import com.example.remeeton.model.dados.PreferencesUtil
+import com.example.remeeton.model.dados.UsuarioDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+
+val usuarioDAO: UsuarioDAO = UsuarioDAO()
+
 @Composable
-fun TelaRegister(
-    modifier: Modifier,
-    onRegisterClick: () -> Unit ) {
+fun TelaLogin(
+    modifier: Modifier = Modifier,
+    onSigninClick: (String) -> Unit,
+    onRegisterClick: () -> Unit,
+    onRegisterRoomClick: () -> Unit) {
+
     val context = LocalContext.current
+    val preferencesUtil = remember { PreferencesUtil(context) }
+
     val scope = rememberCoroutineScope()
 
-    var login by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var senha by remember { mutableStateOf("") }
+    var login by remember {mutableStateOf("")}
+    var senha by remember {mutableStateOf("")}
     var mensagemErro by remember { mutableStateOf<String?>(null) }
+
+    // Função de login
+    fun login(email: String, senha: String) {
+        scope.launch(Dispatchers.IO) {
+            usuarioDAO.buscarUsuarioPorEmail(email) { usuario ->
+                if (usuario != null && usuario.senha == senha) {
+                    preferencesUtil.currentUserId = usuario.id
+                    // Navegar para a tela principal com o ID do usuário
+                    usuario.id?.let {onSigninClick(it) } // Passa o usuário autenticado
+                } else {
+                    mensagemErro = "Login ou senha inválidos!"
+                }
+            }
+        }
+    }
+
+
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.fillMaxWidth()) {
-
         OutlinedTextField(
             value = login,
             onValueChange = {login = it},
-            label = { Text(text = "Nome") })
-        Spacer(modifier =  Modifier.height(10.dp))
-        OutlinedTextField(
-            value = email,
-            onValueChange = {email = it},
-            label = { Text(text = "Email") })
-
+            label = { Text(text = "Login")})
         Spacer(modifier =  Modifier.height(10.dp))
 
         OutlinedTextField(
             value = senha,
             visualTransformation = PasswordVisualTransformation(),
             onValueChange = {senha = it},
-            label = { Text(text = "Senha") })
+            label = { Text(text = "Senha")})
+
         Button(
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-            if(login.isNotEmpty() && email.isNotEmpty() && senha.isNotEmpty()) {
-                val user = Usuario(nome = login, email = email, senha = senha)
-                scope.launch(Dispatchers.IO) {
-                    usuarioDAO.adicionar(user){ sucesso ->
-                        if(sucesso) {
-                            onRegisterClick()
-                        } else{
-                            mensagemErro = "Erro ao cadastrar usuário!"
-                        }
-                    }
-            }
-            }else{
-                mensagemErro = "Preecha os campos do formulário!"
-            }
-
+                login(login,senha)
         }) {
-            Text("Cadastrar")
+            Text("Entrar")
+        }
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                onRegisterClick()
+            }) {
+            Text("Cadastre-se")
         }
 
         mensagemErro?.let {
@@ -87,4 +98,5 @@ fun TelaRegister(
             }
         }
     }
+
 }

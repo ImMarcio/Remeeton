@@ -1,6 +1,5 @@
-package com.example.navegacao1.model.dados
+package com.example.remeeton.model.dados
 
-import androidx.compose.runtime.Composable
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
