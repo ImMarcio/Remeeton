@@ -20,12 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.example.remeeton.model.dados.Usuario
+import com.example.remeeton.model.data.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun TelaRegister(
+fun RegisterUser(
     modifier: Modifier,
     onRegisterClick: () -> Unit ) {
     val context = LocalContext.current
@@ -33,8 +33,8 @@ fun TelaRegister(
 
     var login by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-    var senha by remember { mutableStateOf("") }
-    var mensagemErro by remember { mutableStateOf<String?>(null) }
+    var password by remember { mutableStateOf("") }
+    var messageError by remember { mutableStateOf<String?>(null) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -53,36 +53,36 @@ fun TelaRegister(
         Spacer(modifier =  Modifier.height(10.dp))
 
         OutlinedTextField(
-            value = senha,
+            value = password,
             visualTransformation = PasswordVisualTransformation(),
-            onValueChange = {senha = it},
+            onValueChange = {password = it},
             label = { Text(text = "Senha") })
         Button(
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-            if(login.isNotEmpty() && email.isNotEmpty() && senha.isNotEmpty()) {
-                val user = Usuario(nome = login, email = email, senha = senha)
+            if(login.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
+                val user = User(name = login, email = email, password = password)
                 scope.launch(Dispatchers.IO) {
-                    usuarioDAO.adicionar(user){ sucesso ->
+                    userDAO.add(user){ sucesso ->
                         if(sucesso) {
                             onRegisterClick()
                         } else{
-                            mensagemErro = "Erro ao cadastrar usuário!"
+                            messageError = "Erro ao cadastrar usuário!"
                         }
                     }
             }
             }else{
-                mensagemErro = "Preecha os campos do formulário!"
+                messageError = "Preecha os campos do formulário!"
             }
 
         }) {
             Text("Cadastrar")
         }
 
-        mensagemErro?.let {
+        messageError?.let {
             LaunchedEffect(it) {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                mensagemErro = null
+                messageError = null
             }
         }
     }

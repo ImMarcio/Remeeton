@@ -20,20 +20,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.example.remeeton.model.dados.PreferencesUtil
-import com.example.remeeton.model.dados.UsuarioDAO
+import com.example.remeeton.model.data.PreferencesUtil
+import com.example.remeeton.model.data.UserDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-val usuarioDAO: UsuarioDAO = UsuarioDAO()
+val userDAO: UserDAO = UserDAO()
 
 @Composable
 fun TelaLogin(
     modifier: Modifier = Modifier,
     onSigninClick: (String) -> Unit,
     onRegisterClick: () -> Unit,
-    onRegisterRoomClick: () -> Unit) {
+    onRegisterSpaceClick: () -> Unit) {
 
     val context = LocalContext.current
     val preferencesUtil = remember { PreferencesUtil(context) }
@@ -41,19 +41,17 @@ fun TelaLogin(
     val scope = rememberCoroutineScope()
 
     var login by remember {mutableStateOf("")}
-    var senha by remember {mutableStateOf("")}
-    var mensagemErro by remember { mutableStateOf<String?>(null) }
+    var password by remember {mutableStateOf("")}
+    var messageError by remember { mutableStateOf<String?>(null) }
 
-    // Função de login
-    fun login(email: String, senha: String) {
+    fun login(email: String, password: String) {
         scope.launch(Dispatchers.IO) {
-            usuarioDAO.buscarUsuarioPorEmail(email) { usuario ->
-                if (usuario != null && usuario.senha == senha) {
+            userDAO.findByEmail(email) { usuario ->
+                if (usuario != null && usuario.password == password) {
                     preferencesUtil.currentUserId = usuario.id
-                    // Navegar para a tela principal com o ID do usuário
-                    usuario.id?.let {onSigninClick(it) } // Passa o usuário autenticado
+                    usuario.id?.let {onSigninClick(it) }
                 } else {
-                    mensagemErro = "Login ou senha inválidos!"
+                    messageError = "Login ou senha inválidos!"
                 }
             }
         }
@@ -71,15 +69,15 @@ fun TelaLogin(
         Spacer(modifier =  Modifier.height(10.dp))
 
         OutlinedTextField(
-            value = senha,
+            value = password,
             visualTransformation = PasswordVisualTransformation(),
-            onValueChange = {senha = it},
+            onValueChange = {password = it},
             label = { Text(text = "Senha")})
 
         Button(
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-                login(login,senha)
+                login(login,password)
         }) {
             Text("Entrar")
         }
@@ -91,10 +89,10 @@ fun TelaLogin(
             Text("Cadastre-se")
         }
 
-        mensagemErro?.let {
+        messageError?.let {
             LaunchedEffect(it) {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                mensagemErro = null
+                messageError = null
             }
         }
     }

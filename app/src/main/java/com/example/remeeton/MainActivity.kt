@@ -18,13 +18,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.remeeton.ui.telas.EditarSalaView
-import com.example.remeeton.ui.telas.EditarUsuarioView
-import com.example.remeeton.ui.telas.SalaRegister
+import com.example.remeeton.ui.telas.EditSpaceView
+import com.example.remeeton.ui.telas.EditUserView
+import com.example.remeeton.ui.telas.Home
+import com.example.remeeton.ui.telas.RegisterSpace
+import com.example.remeeton.ui.telas.RegisterUser
 import com.example.remeeton.ui.telas.TelaLogin
-import com.example.remeeton.ui.telas.TelaPrincipal
-import com.example.remeeton.ui.telas.TelaRegister
-import com.example.remeeton.ui.telas.roomDao
+import com.example.remeeton.ui.telas.spaceDao
 import com.example.remeeton.ui.theme.Navegacao1Theme
 import com.google.firebase.FirebaseApp
 
@@ -51,22 +51,22 @@ class MainActivity : ComponentActivity() {
                             TelaLogin(
                                 modifier = Modifier.padding(innerPadding),
                                 onSigninClick = { usuarioId ->
-                                    navController.navigate("principal/$usuarioId")
+                                    navController.navigate("home/$usuarioId")
                                 },
                                 onRegisterClick = {
-                                    navController.navigate("cadastro")
+                                    navController.navigate("register")
                                 },
-                                onRegisterRoomClick = {
-                                    navController.navigate("cadastro-sala")
+                                onRegisterSpaceClick = {
+                                    navController.navigate("register-space")
                                 }
                             )
                         }
-                        composable("principal/{usuarioId}") { backStackEntry ->
-                            val usuarioId = backStackEntry.arguments?.getString("usuarioId")
-                            usuarioId?.let {
-                                TelaPrincipal(
+                        composable("home/{userId}") { backStackEntry ->
+                            val userId = backStackEntry.arguments?.getString("userId")
+                            userId?.let {
+                                Home(
                                     navController = navController,
-                                    usuarioId = it,
+                                    userId = it,
                                     modifier = Modifier.padding(innerPadding),
                                     onLogoffClick = {
                                         navController.navigate("login")
@@ -74,62 +74,44 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                         }
-                        composable("cadastro") {
-                            TelaRegister(
+                        composable("register") {
+                            RegisterUser(
                                 modifier = Modifier.padding(innerPadding),
                                 onRegisterClick = {
                                     navController.navigate("login")
                                 })
                         }
-                        composable("cadastro-sala") {
-                            SalaRegister(modifier = Modifier.padding(innerPadding),
-                                onRegisterRoomClick = { usuarioId ->
-                                    navController.navigate("principal/$usuarioId")
+                        composable("register-space") {
+                            RegisterSpace(modifier = Modifier.padding(innerPadding),
+                                onRegisterRoomClick = { userId ->
+                                    navController.navigate("home/$userId")
                                 })
                         }
-                        composable("editar_sala/{salaId}") { backStackEntry ->
-                            val salaId = backStackEntry.arguments?.getString("salaId")
-                            salaId?.let {
-                                EditarSalaView(
-                                    roomDao,
-                                    salaId = it,
-                                    onEditClick = { usuarioId ->
-                                        navController.navigate("principal/$usuarioId")
+                        composable("edit-space/{spaceId}") { backStackEntry ->
+                            val spaceId = backStackEntry.arguments?.getString("spaceId")
+                            spaceId?.let {
+                                EditSpaceView(
+                                    spaceDao,
+                                    spaceId = it,
+                                    onEditClick = { userId ->
+                                        navController.navigate("home/$userId")
                                     })
                             }
                         }
-                        composable("editar_usuario/{usuarioId}") { backStackEntry ->
-                            val usuarioId = backStackEntry.arguments?.getString("usuarioId")
-                            usuarioId?.let {
-                                EditarUsuarioView(
-                                    usuarioId = it,
+                        composable("edit-user/{userId}") { backStackEntry ->
+                            val userId = backStackEntry.arguments?.getString("userId")
+                            userId?.let {
+                                EditUserView(
+                                    userId = it,
                                     navController = navController,
-                                    onEditClick = { usuarioId ->
-                                        navController.navigate("principal/$usuarioId")
+                                    onEditClick = { userId ->
+                                        navController.navigate("home/$userId")
                                     })
                             }
-
                         }
-
-
                     }
-
                 }
             }
-        }
-    }
-
-
-    @Composable
-    fun Greeting(name: String, modifier: Modifier = Modifier) {
-//    TelaLogin()
-    }
-
-    @Preview(showBackground = true)
-    @Composable
-    fun GreetingPreview() {
-        Navegacao1Theme {
-//       TelaLogin()
         }
     }
 }

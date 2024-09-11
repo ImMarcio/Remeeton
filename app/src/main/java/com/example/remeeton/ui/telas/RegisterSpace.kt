@@ -19,15 +19,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.example.remeeton.model.dados.PreferencesUtil
-import com.example.remeeton.model.dados.Room
-import com.example.remeeton.model.dados.RoomDao
+import com.example.remeeton.model.data.PreferencesUtil
+import com.example.remeeton.model.data.Space
+import com.example.remeeton.model.data.SpaceDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-val roomDao = RoomDao()
+val spaceDao = SpaceDAO()
 
 @Composable
-fun SalaRegister(
+fun RegisterSpace (
     modifier: Modifier,
     onRegisterRoomClick: (String) -> Unit ) {
     val context = LocalContext.current
@@ -35,55 +35,55 @@ fun SalaRegister(
     val preferencesUtil = remember { PreferencesUtil(context) }
     val currentUserId = preferencesUtil.currentUserId
 
-    var nome by remember { mutableStateOf("") }
-    var descricao by remember { mutableStateOf("") }
-    var reservada by remember { mutableStateOf(false) }
-    var mensagemErro by remember { mutableStateOf<String?>(null) }
+    var name by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var reserved by remember { mutableStateOf(false) }
+    var messageError by remember { mutableStateOf<String?>(null) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.fillMaxWidth()) {
 
         OutlinedTextField(
-            value = nome,
-            onValueChange = {nome = it},
+            value = name,
+            onValueChange = {name = it},
             label = { Text(text = "Nome") })
         Spacer(modifier =  Modifier.height(10.dp))
         OutlinedTextField(
-            value = descricao,
-            onValueChange = {descricao = it},
-            label = { Text(text = "descricao") })
+            value = description,
+            onValueChange = {description = it},
+            label = { Text(text = "description") })
 
         Spacer(modifier =  Modifier.height(10.dp))
 
         Button(
             modifier = Modifier.fillMaxWidth(),
             onClick = {
-                if(nome.isNotEmpty() && descricao.isNotEmpty() ) {
-                    val sala = Room(nome = nome, descricao = descricao, reservada = reservada)
+                if(name.isNotEmpty() && description.isNotEmpty() ) {
+                    val sala = Space(name = name, description = description, reserved = reserved)
                     scope.launch(Dispatchers.IO) {
-                        roomDao.adicionar(sala){ sucesso ->
-                            if(sucesso) {
+                        spaceDao.add(sala){ success ->
+                            if(success) {
                                 if (currentUserId != null) {
                                     onRegisterRoomClick(currentUserId)
                                 }
                             } else{
-                                mensagemErro = "Erro ao cadastrar Sala!"
+                                messageError = "Erro ao cadastrar Sala!"
                             }
                         }
                     }
                 }else{
-                    mensagemErro = "Preecha os campos do formulário!"
+                    messageError = "Preecha os campos do formulário!"
                 }
 
             }) {
             Text("Cadastrar")
         }
 
-        mensagemErro?.let {
+        messageError?.let {
             LaunchedEffect(it) {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                mensagemErro = null
+                messageError = null
             }
         }
     }

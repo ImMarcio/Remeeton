@@ -24,14 +24,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.remeeton.model.dados.PreferencesUtil
-import com.example.remeeton.model.dados.Usuario
+import com.example.remeeton.model.data.PreferencesUtil
+import com.example.remeeton.model.data.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun EditarUsuarioView(
-    usuarioId: String,
+fun EditUserView(
+    userId: String,
     navController: NavController,
     onEditClick: (String) -> Unit
 ) {
@@ -40,20 +40,19 @@ fun EditarUsuarioView(
     val preferencesUtil = remember { PreferencesUtil(context) }
     val currentUserId = preferencesUtil.currentUserId
 
-    var usuario by remember { mutableStateOf<Usuario?>(null) }
+    var user by remember { mutableStateOf<User?>(null) }
     var nome by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
 
     val scope = rememberCoroutineScope()
 
-    // Carregar dados do usuário
-    LaunchedEffect(usuarioId) {
+    LaunchedEffect(userId) {
         scope.launch(Dispatchers.IO) {
-            usuarioDAO.buscarUsuarioPorId(usuarioId) { usuarioRetornado ->
-                if (usuarioRetornado != null) {
-                    usuario = usuarioRetornado
-                    nome = usuarioRetornado.nome
-                    email = usuarioRetornado.email
+            userDAO.findById(userId) { userReturned ->
+                if (userReturned != null) {
+                    user = userReturned
+                    nome = userReturned.name
+                    email = userReturned.email
                 }
             }
         }
@@ -89,18 +88,17 @@ fun EditarUsuarioView(
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            if (usuario != null) {
+            if (user != null) {
                 scope.launch(Dispatchers.IO) {
-                    usuario?.let { usuarioAtual ->
-                        usuarioAtual.nome = nome
+                    user?.let { usuarioAtual ->
+                        usuarioAtual.name = nome
                         usuarioAtual.email = email
-                        usuarioDAO.atualizarUsuario(usuarioAtual) { sucesso ->
-                            if (sucesso) {
+                        userDAO.update(usuarioAtual) { success ->
+                            if (success) {
                                 if (currentUserId != null) {
                                     onEditClick(currentUserId)
                                 }
                             } else {
-                                // Exibir uma mensagem de erro
                             }
                         }
                     }
@@ -112,12 +110,12 @@ fun EditarUsuarioView(
         Spacer(modifier = Modifier.width(8.dp))
 
         Button(onClick = {
-            usuario?.id?.let { id ->
+            user?.id?.let { id ->
                 scope.launch(Dispatchers.IO) {
-                    usuarioDAO.excluirUsuarioPorId(id) { sucesso ->
+                    userDAO.deleteById(id) { sucesso ->
                         if (sucesso) {
                             println("Usuário excluído com sucesso.")
-                            navController.navigate("principal")
+                            navController.navigate("home")
                         } else {
                             println("Falha ao excluir o usuário.")
                         }

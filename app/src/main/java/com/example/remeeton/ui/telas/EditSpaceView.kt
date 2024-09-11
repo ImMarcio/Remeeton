@@ -15,7 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import com.example.remeeton.model.dados.Room
+import com.example.remeeton.model.data.Space
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Text
@@ -23,16 +23,16 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
-import com.example.remeeton.model.dados.PreferencesUtil
-import com.example.remeeton.model.dados.RoomDao
+import com.example.remeeton.model.data.PreferencesUtil
+import com.example.remeeton.model.data.SpaceDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
 @Composable
-fun EditarSalaView(
-    roomDao: RoomDao,
-    salaId: String,
+fun EditSpaceView (
+    spaceDAO: SpaceDAO,
+    spaceId: String,
     onEditClick: (String) -> Unit) {
     val context = LocalContext.current
 
@@ -40,22 +40,20 @@ fun EditarSalaView(
     val currentUserId = preferencesUtil.currentUserId
 
     val scope = rememberCoroutineScope()
-    var sala by remember { mutableStateOf<Room?>(null) }
-    var nome by remember { mutableStateOf("") }
-    var descricao by remember { mutableStateOf("") }
+    var space by remember { mutableStateOf<Space?>(null) }
+    var name by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
 
-    // Buscar a sala pelo ID
-    LaunchedEffect(salaId) {
-        roomDao.buscarSalaPorId(salaId) { result ->
-            sala = result
+    LaunchedEffect(spaceId) {
+        spaceDAO.findById(spaceId) { result ->
+            space = result
             if (result != null) {
-                nome = result.nome
-                descricao = result.descricao
+                name = result.name
+                description = result.description
             }
         }
     }
 
-    // Tela de edição
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -63,42 +61,42 @@ fun EditarSalaView(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Editar Sala", style = MaterialTheme.typography.bodySmall)
+        Text(text = "Editar Espaço", style = MaterialTheme.typography.bodySmall)
 
         Spacer(modifier = Modifier.height(16.dp))
 
         TextField(
-            value = nome,
-            onValueChange = { nome = it },
-            label = { Text("Nome da Sala") },
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Nome do Espaço") },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         TextField(
-            value = descricao,
-            onValueChange = { descricao = it },
-            label = { Text("Descrição da Sala") },
+            value = description,
+            onValueChange = { description = it },
+            label = { Text("Descrição do Espaço") },
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = {
-            if (sala != null) {
+            if (space != null) {
                 scope.launch(Dispatchers.IO) {
-                    val novosDados = mapOf(
-                        "nome" to nome,
-                        "descricao" to descricao
+                    val newData = mapOf(
+                        "name" to name,
+                        "description" to description
                     )
-                    roomDao.editarSala(salaId, novosDados) { sucesso ->
-                        if (sucesso) {
+                    spaceDAO.edit(spaceId, newData) { success ->
+                        if (success) {
                             if (currentUserId != null) {
                                 onEditClick(currentUserId)
                             }
                         } else {
-                            // Exibir uma mensagem de erro
+                            println("Falha ao excluir o espaço.")
                         }
                     }
                 }
