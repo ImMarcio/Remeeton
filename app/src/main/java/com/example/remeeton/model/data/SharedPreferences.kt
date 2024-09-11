@@ -1,5 +1,5 @@
 // PreferencesUtil.kt
-package com.example.remeeton.model.dados
+package com.example.remeeton.model.data
 
 import android.content.Context
 import android.content.SharedPreferences

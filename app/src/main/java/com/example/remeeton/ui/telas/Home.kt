@@ -24,20 +24,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.remeeton.model.dados.PreferencesUtil
-import com.example.remeeton.model.dados.Room
-import com.example.remeeton.model.dados.RoomDao
-import com.example.remeeton.model.dados.Usuario
-import com.example.remeeton.model.dados.UsuarioDAO
+import com.example.remeeton.model.data.PreferencesUtil
+import com.example.remeeton.model.data.Space
+import com.example.remeeton.model.data.SpaceDAO
+import com.example.remeeton.model.data.User
+import com.example.remeeton.model.data.UserDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun TelaPrincipal(
+fun Home(
     navController: NavController,
     modifier: Modifier = Modifier,
     onLogoffClick: () -> Unit,
-    usuarioId: String
+    userId: String
 ) {
     val context = LocalContext.current
     var scope = rememberCoroutineScope()
@@ -45,86 +45,81 @@ fun TelaPrincipal(
     val preferencesUtil = remember { PreferencesUtil(context) }
     val currentUserId = preferencesUtil.currentUserId
 
-    var usuarios by remember { mutableStateOf<List<Usuario>>(emptyList()) }
-    var salas by remember { mutableStateOf<List<Room>>(emptyList()) }
+    var users by remember { mutableStateOf<List<User>>(emptyList()) }
+    var spaces by remember { mutableStateOf<List<Space>>(emptyList()) }
 
-    val usuarioDAO = UsuarioDAO()
-    val roomDAO = RoomDao()
+    val userDAO = UserDAO()
+    val spaceDAO = SpaceDAO()
 
-    var mensagemErro by remember { mutableStateOf<String?>(null) }
-    var mensagemSucesso by remember { mutableStateOf<String?>(null) }
-    // Função para carregar as salas e usuários
-    fun carregarDados() {
+    var messageError by remember { mutableStateOf<String?>(null) }
+    var messageSuccess by remember { mutableStateOf<String?>(null) }
+    fun loadData() {
         scope.launch(Dispatchers.IO) {
-            usuarioDAO.buscarUsuarios { usuariosRetornados ->
-                usuarios = usuariosRetornados
+            userDAO.findAll { returnedUsers ->
+                users = returnedUsers
             }
-            roomDAO.buscarSalas { salasRetornadas ->
-                salas = salasRetornadas
+            spaceDAO.findAll { returnedSpaces ->
+                spaces = returnedSpaces
             }
         }
     }
 
-    // Função para excluir usuário
-    fun excluirUsuario(id: String) {
+    fun deleteUserById(id: String) {
         scope.launch(Dispatchers.IO) {
-            usuarioDAO.excluirUsuarioPorId(id) { sucesso ->
-                if (sucesso) {
-                    mensagemSucesso = "Usuário excluído com sucesso."
-                    carregarDados() // Recarregar dados após exclusão
+            userDAO.deleteById(id) { success ->
+                if (success) {
+                    messageSuccess = "Usuário excluído com sucesso."
+                    loadData()
                 } else {
-                    mensagemErro = "Falha ao excluir o usuário."
+                    messageError = "Falha ao excluir o usuário."
                 }
             }
         }
     }
 
-    // Função para excluir sala
-    fun excluirSala(id: String) {
+    fun deleteSpaceById(id: String) {
         scope.launch(Dispatchers.IO) {
-            roomDAO.excluirSalaPorId(id) { sucesso ->
-                if (sucesso) {
-                    mensagemSucesso = "Sala excluída com sucesso."
-                    carregarDados() // Recarregar dados após exclusão
+            spaceDAO.deleteById(id) { success ->
+                if (success) {
+                    messageSuccess = "Espaço excluído com sucesso."
+                    loadData()
                 } else {
-                    mensagemErro = "Falha ao excluir a sala."
+                    messageError = "Falha ao excluir a sala."
                 }
             }
         }
     }
 
-
-    // Função para reservar sala
-    fun reservarSala(salaId: String) {
-        usuarioDAO.reservarSala(salaId, usuarioId) { sucesso ->
-            if (sucesso) {
-                mensagemSucesso = "Sala reservada com sucesso."
-                carregarDados() // Recarregar dados após reserva
+    fun bookSpace(spaceId: String) {
+        userDAO.bookSpace(spaceId, userId) { success ->
+            if (success) {
+                messageSuccess = "Espaço reservado com sucesso."
+                loadData()
             } else {
-                mensagemErro = "Falha ao reservar a sala."
+                messageError = "Falha ao reservar o espaço."
             }
         }
     }
-    // Função para desmarcar sala
-    fun desmarcarSala(salaId: String) {
-        usuarioDAO.cancelarReservaSala(usuarioId, salaId) { sucesso ->
-            if (sucesso) {
-                mensagemSucesso = "Reserva cancelada com sucesso."
-                carregarDados() // Recarregar dados após cancelamento
+
+    fun cancelBookingSpace(spaceId: String) {
+        userDAO.cancelBookingSpace(userId, spaceId) { success ->
+            if (success) {
+                messageSuccess = "Reserva cancelada com sucesso."
+                loadData()
             } else {
-                mensagemErro = "Falha ao cancelar a reserva."
+                messageError = "Falha ao cancelar a reserva."
             }
         }
     }
 
     Column(modifier = modifier) {
         Text(text = "Tela Principal")
-        mensagemSucesso?.let { Text(text = it, style = MaterialTheme.typography.titleMedium) }
-        mensagemErro?.let { Text(text = it, style = MaterialTheme.typography.titleMedium) }
+        messageSuccess?.let { Text(text = it, style = MaterialTheme.typography.titleMedium) }
+        messageError?.let { Text(text = it, style = MaterialTheme.typography.titleMedium) }
 
         Row {
             Button(onClick = {
-                carregarDados()
+                loadData()
             }) {
                 Text("Carregar")
             }
@@ -134,7 +129,7 @@ fun TelaPrincipal(
                 Text("Sair")
             }
             Button(onClick = {
-                navController.navigate("cadastro-sala")
+                navController.navigate("register-space")
             }) {
                 Text("Cadastrar Sala")
             }
@@ -146,17 +141,17 @@ fun TelaPrincipal(
 
 
         LazyColumn {
-            items(usuarios) { usuario ->
+            items(users) { user ->
                 Card(modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
                     shape = MaterialTheme.shapes.medium) {
                     Column {
-                        Text(text = usuario.nome, style = MaterialTheme.typography.titleMedium)
-                        Text(text = usuario.email, style = MaterialTheme.typography.bodyMedium)
+                        Text(text = user.name, style = MaterialTheme.typography.titleMedium)
+                        Text(text = user.email, style = MaterialTheme.typography.bodyMedium)
                         Spacer(modifier = Modifier.height(8.dp))
                         Row {
-                            Button(onClick = { usuario.id?.let { excluirUsuario(it) }})
+                            Button(onClick = { user.id?.let { deleteUserById(it) }})
                             {
                                 Text(text = "Excluir")
                             }
@@ -164,8 +159,8 @@ fun TelaPrincipal(
                             Spacer(modifier = Modifier.width(8.dp))
 
                             Button(onClick = {
-                                usuario.id?.let { id ->
-                                    navController.navigate("editar_usuario/$id")
+                                user.id?.let { id ->
+                                    navController.navigate("edit-user/$id")
                                 }
                             }) {
                                 Text(text = "Editar")
@@ -179,11 +174,10 @@ fun TelaPrincipal(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-//        Text(text = "Salas $usuarioId  user: $currentUserId", style = MaterialTheme.typography.titleMedium)
-          Text(text = "Salas ", style = MaterialTheme.typography.titleMedium)
+        Text(text = "Espaços ", style = MaterialTheme.typography.titleMedium)
 
         LazyColumn {
-            items(salas) { sala ->
+            items(spaces) { space ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -191,42 +185,41 @@ fun TelaPrincipal(
                     shape = MaterialTheme.shapes.medium
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text(text = sala.nome, style = MaterialTheme.typography.titleMedium)
+                        Text(text = space.name, style = MaterialTheme.typography.titleMedium)
                         Text(
-                            text = if (sala.reservadoPor == null) "Disponível" else "Reservada",
+                            text = if (space.reservedBy == null) "Disponível" else "Reservada",
                             style = MaterialTheme.typography.bodyMedium
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Row {
                             Button(
-                                onClick = { sala.id?.let { excluirSala(it) } },
+                                onClick = { space.id?.let { deleteSpaceById(it) } },
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                             ) {
                                 Text(text = "Excluir")
                             }
                             Spacer(modifier = Modifier.width(8.dp))
 
-
                             Button(
-                                onClick = { sala.id?.let { reservarSala(it) } },
+                                onClick = { space.id?.let { bookSpace(it) } },
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                             ) {
                                 Text(text = "Reservar")
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             Button(
-                                onClick = { sala.id?.let { desmarcarSala(it) } },
+                                onClick = { space.id?.let { cancelBookingSpace(it) } },
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                             ) {
-                                Text(text = "Unreserva")
+                                Text(text = "Disponibizar")
                             }
 
                             Spacer(modifier = Modifier.width(8.dp))
 
                             Button(
                                 onClick = {
-                                    sala.id?.let { id ->
-                                        navController.navigate("editar_sala/$id")
+                                    space.id?.let { id ->
+                                        navController.navigate("edit-space/$id")
                                     }
                                 }
                             ) {
