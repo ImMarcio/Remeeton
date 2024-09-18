@@ -24,7 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import com.example.remeeton.model.data.PreferencesUtil
-import com.example.remeeton.model.data.SpaceDAO
+import com.example.remeeton.model.repository.SpaceDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

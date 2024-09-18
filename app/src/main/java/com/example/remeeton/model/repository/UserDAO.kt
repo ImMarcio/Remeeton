@@ -1,8 +1,13 @@
-package com.example.remeeton.model.data
+package com.example.remeeton.model.repository
 
+import com.example.remeeton.model.data.Space
+import com.example.remeeton.model.data.User
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
+import java.lang.Exception
+import kotlin.collections.toMutableList
+import kotlin.let
 
 //classe que pega dados do Firestore
  class  UserDAO {
@@ -111,9 +116,11 @@ import com.google.firebase.firestore.toObjects
                 transaction.set(spaceRef, space)
 
                 val reservedSpaces = user.spaces.toMutableList()
-                reservedSpaces.add(spaceId)
-                user.spaces = reservedSpaces
-                transaction.set(userRef, user)
+                if (!reservedSpaces.contains(spaceId)) {
+                    reservedSpaces.add(spaceId)
+                    user.spaces = reservedSpaces
+                    transaction.set(userRef, user)
+                }
             } else {
                 throw Exception("Usuário ou espaço não encontrados.")
             }

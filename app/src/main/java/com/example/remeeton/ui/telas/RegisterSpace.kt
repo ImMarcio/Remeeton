@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.remeeton.model.data.PreferencesUtil
 import com.example.remeeton.model.data.Space
-import com.example.remeeton.model.data.SpaceDAO
+import com.example.remeeton.model.repository.SpaceDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 val spaceDao = SpaceDAO()
