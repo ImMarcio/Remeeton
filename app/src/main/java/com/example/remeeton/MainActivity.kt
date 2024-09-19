@@ -15,14 +15,19 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.remeeton.ui.telas.*
+import com.example.remeeton.ui.screens.*
+import com.example.remeeton.ui.screens.space.EditSpaceView
+import com.example.remeeton.ui.screens.space.RegisterSpace
+import com.example.remeeton.ui.screens.space.spaceDao
+import com.example.remeeton.ui.screens.user.EditUserView
+import com.example.remeeton.ui.screens.user.TelaLogin
+import com.example.remeeton.ui.telas.RegisterUser
 import com.example.remeeton.ui.theme.Navegacao1Theme
 import com.google.firebase.FirebaseApp
 
@@ -118,7 +123,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ShowTopBar(navController: NavController, currentBackStackEntry: NavBackStackEntry?) {
     val route = currentBackStackEntry?.destination?.route
-    if (route != "login") {
+    if (route != " route != "register") {
         TopAppBar(
             title = { Text("RemeetOn") },
             Modifier.background(MaterialTheme.colorScheme.secondary)
