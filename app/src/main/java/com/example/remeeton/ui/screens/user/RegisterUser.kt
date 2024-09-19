@@ -24,7 +24,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun RegisterUser(
     modifier: Modifier = Modifier,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+    onReturnClick: () -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -104,9 +105,15 @@ fun RegisterUser(
             Text("Cadastrar", fontSize = 18.sp, color = Color.White)
         }
 
+        TextButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { onReturnClick() }
+        ) {
+            Text("Voltar", fontSize = 16.sp, color = MaterialTheme.colorScheme.primary)
+        }
+
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Error message handling
         messageError?.let {
             LaunchedEffect(it) {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()

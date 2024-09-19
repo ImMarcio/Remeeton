@@ -34,7 +34,6 @@ fun TelaLogin(
     modifier: Modifier = Modifier,
     onSigninClick: (String) -> Unit,
     onRegisterClick: () -> Unit,
-    onRegisterSpaceClick: () -> Unit
 ) {
     val context = LocalContext.current
     val preferencesUtil = remember { PreferencesUtil(context) }
@@ -107,7 +106,6 @@ fun TelaLogin(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Register Button
         TextButton(
             modifier = Modifier.fillMaxWidth(),
             onClick = { onRegisterClick() }
@@ -115,7 +113,6 @@ fun TelaLogin(
             Text("Cadastre-se", fontSize = 16.sp, color = MaterialTheme.colorScheme.primary)
         }
 
-        // Error message handling
         messageError?.let {
             LaunchedEffect(it) {
                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()

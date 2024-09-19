@@ -1,35 +1,30 @@
-package com.example.remeeton.ui.screens
+package com.example.remeeton
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.remeeton.R
 import com.example.remeeton.model.data.PreferencesUtil
 import com.example.remeeton.model.data.Space
 import com.example.remeeton.model.repository.SpaceDAO
-import com.example.remeeton.model.data.User
-import com.example.remeeton.model.repository.UserDAO
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -40,61 +35,31 @@ fun Home(
     userId: String
 ) {
     val context = LocalContext.current
-    var scope = rememberCoroutineScope()
+    val scope = rememberCoroutineScope()
 
     val preferencesUtil = remember { PreferencesUtil(context) }
     val currentUserId = preferencesUtil.currentUserId
 
-    var users by remember { mutableStateOf<List<User>>(emptyList()) }
     var spaces by remember { mutableStateOf<List<Space>>(emptyList()) }
+    var searchQuery by remember { mutableStateOf("") }
 
-    val userDAO = UserDAO()
     val spaceDAO = SpaceDAO()
-
     var messageError by remember { mutableStateOf<String?>(null) }
     var messageSuccess by remember { mutableStateOf<String?>(null) }
-    fun loadData() {
+
+    fun loadSpaces() {
         scope.launch(Dispatchers.IO) {
-            userDAO.findAll { returnedUsers ->
-                users = returnedUsers
-            }
             spaceDAO.findAll { returnedSpaces ->
                 spaces = returnedSpaces
             }
         }
     }
 
-    fun deleteUserById(id: String) {
-        scope.launch(Dispatchers.IO) {
-            userDAO.deleteById(id) { success ->
-                if (success) {
-                    messageSuccess = "Usuário excluído com sucesso."
-                    loadData()
-                } else {
-                    messageError = "Falha ao excluir o usuário."
-                }
-            }
-        }
-    }
-
-    fun deleteSpaceById(id: String) {
-        scope.launch(Dispatchers.IO) {
-            spaceDAO.deleteById(id) { success ->
-                if (success) {
-                    messageSuccess = "Espaço excluído com sucesso."
-                    loadData()
-                } else {
-                    messageError = "Falha ao excluir a sala."
-                }
-            }
-        }
-    }
-
     fun bookSpace(spaceId: String) {
-        userDAO.bookSpace(spaceId, userId) { success ->
+        spaceDAO.book(spaceId, userId) { success ->
             if (success) {
                 messageSuccess = "Espaço reservado com sucesso."
-                loadData()
+                loadSpaces()
             } else {
                 messageError = "Falha ao reservar o espaço."
             }
@@ -102,134 +67,127 @@ fun Home(
     }
 
     fun cancelBookingSpace(spaceId: String) {
-        userDAO.cancelBookingSpace(userId, spaceId) { success ->
+        spaceDAO.cancelBooking(spaceId) { success ->
             if (success) {
                 messageSuccess = "Reserva cancelada com sucesso."
-                loadData()
+                loadSpaces()
             } else {
                 messageError = "Falha ao cancelar a reserva."
             }
         }
     }
 
-    Column(modifier = modifier) {
-        Text(text = "Tela Principal")
-        messageSuccess?.let { Text(text = it, style = MaterialTheme.typography.titleMedium) }
-        messageError?.let { Text(text = it, style = MaterialTheme.typography.titleMedium) }
+    LaunchedEffect(messageSuccess, messageError) {
+        messageSuccess?.let {
+            delay(3000)
+            messageSuccess = null
+        }
+        messageError?.let {
+            delay(3000)
+            messageError = null
+        }
+    }
 
-        Row {
-            Button(onClick = {
-                loadData()
-            }) {
-                Text("Carregar")
-            }
+    LaunchedEffect(Unit) {
+        loadSpaces()
+    }
+
+    Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+        ) {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                modifier = Modifier.weight(1f),
+                label = { Text("Buscar Espaços") },
+                leadingIcon = {
+                    Icon(Icons.Filled.Search, contentDescription = "Buscar")
+                }
+            )
             Spacer(modifier = Modifier.width(8.dp))
-
-            Button(onClick = { onLogoffClick() }) {
-                Text("Sair")
-            }
-            Button(onClick = {
-                navController.navigate("register-space")
-            }) {
-                Text("Cadastrar Sala")
+            Button(
+                onClick = { navController.navigate("register-space") },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)),
+                modifier = Modifier.height(56.dp)
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = "Adicionar Espaço")
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("Adicionar")
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "Usuários", style = MaterialTheme.typography.titleMedium)
-
-
-        LazyColumn {
-            items(users) { user ->
-                Card(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                    shape = MaterialTheme.shapes.medium) {
-                    Column {
-                        Text(text = user.name, style = MaterialTheme.typography.titleMedium)
-                        Text(text = user.email, style = MaterialTheme.typography.bodyMedium)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row {
-                            Button(onClick = { user.id?.let { deleteUserById(it) }})
-                            {
-                                Text(text = "Excluir")
-                            }
-
-                            Spacer(modifier = Modifier.width(8.dp))
-
-                            Button(onClick = {
-                                user.id?.let { id ->
-                                    navController.navigate("edit-user/$id")
-                                }
-                            }) {
-                                Text(text = "Editar")
-                            }
-                        }
-                    }
-                }
+        messageSuccess?.let {
+            LaunchedEffect(it) {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                messageSuccess = null
             }
+        }
 
-    }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "Espaços ", style = MaterialTheme.typography.titleMedium)
+        messageError?.let {
+            LaunchedEffect(it) {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                messageError = null
+            }
+        }
 
         LazyColumn {
-            items(spaces) { space ->
+            items(spaces.filter { it.name.contains(searchQuery, ignoreCase = true) }) { space ->
                 Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                     shape = MaterialTheme.shapes.medium
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text(text = space.name, style = MaterialTheme.typography.titleMedium)
                         Text(
-                            text = if (space.reservedBy == null) "Disponível" else "Reservada",
+                            text = space.name,
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+
+                        val statusText = if (space.reservedBy == null) "Disponível" else "Reservado"
+                        val statusColor = if (space.reservedBy == null) Color.Blue else Color.Red
+                        Text(
+                            text = statusText,
+                            color = statusColor,
                             style = MaterialTheme.typography.bodyMedium
                         )
+
                         Spacer(modifier = Modifier.height(8.dp))
+
                         Row {
-                            Button(
-                                onClick = { space.id?.let { deleteSpaceById(it) } },
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                            ) {
-                                Text(text = "Excluir")
+                            if (space.reservedBy == null) {
+                                Button(
+                                    onClick = { space.id?.let { bookSpace(it) } },
+                                    modifier = Modifier.weight(1f),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
+                                ) {
+                                    Text("Reservar", color = Color.White)
+                                }
+                            } else {
+                                Button(
+                                    onClick = { space.id?.let { cancelBookingSpace(it) } },
+                                    modifier = Modifier.weight(1f),
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                                ) {
+                                    Text("Cancelar Reserva", color = Color.White)
+                                }
                             }
                             Spacer(modifier = Modifier.width(8.dp))
-
-                            Button(
-                                onClick = { space.id?.let { bookSpace(it) } },
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                            ) {
-                                Text(text = "Reservar")
-                            }
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Button(
-                                onClick = { space.id?.let { cancelBookingSpace(it) } },
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                            ) {
-                                Text(text = "Disponibizar")
-                            }
-
-                            Spacer(modifier = Modifier.width(8.dp))
-
                             Button(
                                 onClick = {
                                     space.id?.let { id ->
                                         navController.navigate("edit-space/$id")
                                     }
-                                }
+                                },
+                                modifier = Modifier.weight(1f)
                             ) {
-                                Text(text = "Editar")
+                                Text("Editar")
                             }
                         }
                     }
                 }
             }
         }
-}
-
+    }
 }

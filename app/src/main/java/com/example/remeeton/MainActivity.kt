@@ -21,7 +21,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.remeeton.ui.screens.*
 import com.example.remeeton.ui.screens.space.EditSpaceView
 import com.example.remeeton.ui.screens.space.RegisterSpace
 import com.example.remeeton.ui.screens.space.spaceDao
@@ -46,7 +45,7 @@ class MainActivity : ComponentActivity() {
                     topBar = {
                         ShowTopBar(navController = navController, currentBackStackEntry = currentBackStackEntry)
                     },
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 ) { innerPadding ->
                     NavHost(navController = navController, startDestination = "login") {
                         composable("login") {
@@ -58,9 +57,6 @@ class MainActivity : ComponentActivity() {
                                 onRegisterClick = {
                                     navController.navigate("register")
                                 },
-                                onRegisterSpaceClick = {
-                                    navController.navigate("register-space")
-                                }
                             )
                         }
                         composable("home/{userId}") { backStackEntry ->
@@ -81,7 +77,11 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.padding(innerPadding),
                                 onRegisterClick = {
                                     navController.navigate("login")
-                                })
+                                },
+                                onReturnClick = {
+                                    navController.navigate("login")
+                                }
+                            )
                         }
                         composable("register-space") {
                             RegisterSpace(
@@ -123,10 +123,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ShowTopBar(navController: NavController, currentBackStackEntry: NavBackStackEntry?) {
     val route = currentBackStackEntry?.destination?.route
-    if (route != " route != "register") {
+    if (route != "login" && route != "register") {
         TopAppBar(
-            title = { Text("RemeetOn") },
-            Modifier.background(MaterialTheme.colorScheme.secondary)
+            title = { Text("RemeetOn", color = MaterialTheme.colorScheme.primary) },
+            Modifier.background(MaterialTheme.colorScheme.secondary),
         )
     }
 }
