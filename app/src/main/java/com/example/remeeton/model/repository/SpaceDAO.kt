@@ -1,8 +1,10 @@
-package com.example.remeeton.model.data
+package com.example.remeeton.model.repository
 
+import com.example.remeeton.model.data.Space
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
+import java.lang.Exception
 
 class SpaceDAO {
     val db = FirebaseFirestore.getInstance()

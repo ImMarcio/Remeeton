@@ -26,9 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.remeeton.model.data.PreferencesUtil
 import com.example.remeeton.model.data.Space
-import com.example.remeeton.model.data.SpaceDAO
+import com.example.remeeton.model.repository.SpaceDAO
 import com.example.remeeton.model.data.User
-import com.example.remeeton.model.data.UserDAO
+import com.example.remeeton.model.repository.UserDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
