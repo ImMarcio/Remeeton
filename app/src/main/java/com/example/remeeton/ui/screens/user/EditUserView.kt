@@ -1,4 +1,4 @@
-package com.example.remeeton.ui.telas
+package com.example.remeeton.ui.screens.user
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,6 +28,7 @@ import com.example.remeeton.model.data.PreferencesUtil
 import com.example.remeeton.model.data.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.let
 
 @Composable
 fun EditUserView(

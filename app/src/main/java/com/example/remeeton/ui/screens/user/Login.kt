@@ -1,8 +1,13 @@
-package com.example.remeeton.ui.telas
+package com.example.remeeton.ui.screens.user
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -13,7 +18,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.remeeton.R
@@ -21,6 +25,7 @@ import com.example.remeeton.model.data.PreferencesUtil
 import com.example.remeeton.model.repository.UserDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.let
 
 val userDAO: UserDAO = UserDAO()
 

@@ -1,4 +1,4 @@
-package com.example.remeeton.ui.telas
+package com.example.remeeton.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

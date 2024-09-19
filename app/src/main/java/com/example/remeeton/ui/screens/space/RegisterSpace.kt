@@ -1,4 +1,4 @@
-package com.example.remeeton.ui.telas
+package com.example.remeeton.ui.screens.space
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
@@ -24,6 +24,9 @@ import com.example.remeeton.model.data.Space
 import com.example.remeeton.model.repository.SpaceDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.let
+import kotlin.text.isNotEmpty
+
 val spaceDao = SpaceDAO()
 
 @Composable
