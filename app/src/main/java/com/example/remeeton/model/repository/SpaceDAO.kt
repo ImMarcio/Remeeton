@@ -1,5 +1,6 @@
 package com.example.remeeton.model.repository
 
+import android.util.Log
 import com.example.remeeton.model.data.Space
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
@@ -96,19 +97,20 @@ class SpaceDAO {
             }
         }.addOnSuccessListener {
             callback(true)
-        }.addOnFailureListener {
+        }.addOnFailureListener { e ->
             callback(false)
+            Log.e("SpaceDAO", "Erro ao reservar espaço: ${e.message}")
         }
     }
 
-    fun cancelBooking(spaceId: String, callback: (Boolean) -> Unit) {
+    fun cancelBooking(spaceId: String, userId: String, callback: (Boolean) -> Unit) {
         val spaceRef = db.collection("spaces").document(spaceId)
 
         db.runTransaction { transaction ->
             val space = transaction.get(spaceRef).toObject<Space>()
             if (space != null) {
-                if (space.reservedBy == null) {
-                    throw Exception("O espaço já está reservado.")
+                if (space.reservedBy != userId) {
+                    throw Exception("O espaço não está reservado por este usuário.")
                 }
                 space.reservedBy = null
                 transaction.set(spaceRef, space)
@@ -117,9 +119,9 @@ class SpaceDAO {
             }
         }.addOnSuccessListener {
             callback(true)
-        }.addOnFailureListener {
+        }.addOnFailureListener { e ->
             callback(false)
+            Log.e("SpaceDAO", "Erro ao cancelar reserva: ${e.message}")
         }
     }
-
 }
