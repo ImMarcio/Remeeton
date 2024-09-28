@@ -1,4 +1,4 @@
-package com.example.remeeton.ui.telas
+package com.example.remeeton.ui.screens.user
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -16,8 +16,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.remeeton.R
-import com.example.remeeton.model.data.User
-import com.example.remeeton.ui.screens.user.userDAO
+import com.example.remeeton.model.data.firestore.User
+import com.example.remeeton.model.repository.firestore.UserDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -29,8 +29,9 @@ fun RegisterUser(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val userDAO = remember { UserDAO() }
 
-    var login by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var messageError by remember { mutableStateOf<String?>(null) }
@@ -52,8 +53,8 @@ fun RegisterUser(
         )
 
         OutlinedTextField(
-            value = login,
-            onValueChange = { login = it },
+            value = name,
+            onValueChange = { name = it },
             label = { Text(text = "Nome") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp)
@@ -86,19 +87,31 @@ fun RegisterUser(
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)),
             onClick = {
-                if (login.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
-                    val user = User(name = login, email = email, password = password)
+                if (name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
+                    val user = User(
+                        name = name,
+                        email = email,
+                        password = password,
+                        spaces = listOf()
+                    )
+
                     scope.launch(Dispatchers.IO) {
-                        userDAO.add(user) { sucesso ->
-                            if (sucesso) {
-                                onRegisterClick()
+                        userDAO.add(user) { success ->
+                            if (success) {
+                                userDAO.findByEmail(email) { registeredUser ->
+                                    registeredUser?.let {
+                                        onRegisterClick()
+                                    } ?: run {
+                                        messageError = "Erro ao recuperar usuário cadastrado!"
+                                    }
+                                }
                             } else {
                                 messageError = "Erro ao cadastrar usuário!"
                             }
                         }
                     }
                 } else {
-                    messageError = "Preencha os campos do formulário!"
+                    messageError = "Preencha todos os campos do formulário!"
                 }
             }
         ) {

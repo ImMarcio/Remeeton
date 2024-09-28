@@ -3,11 +3,6 @@ package com.example.remeeton.ui.screens.user
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -22,15 +17,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.remeeton.R
 import com.example.remeeton.model.data.PreferencesUtil
-import com.example.remeeton.model.repository.UserDAO
+import com.example.remeeton.model.repository.firestore.UserDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlin.let
 
 val userDAO: UserDAO = UserDAO()
 
 @Composable
-fun TelaLogin(
+fun Login(
     modifier: Modifier = Modifier,
     onSigninClick: (String) -> Unit,
     onRegisterClick: () -> Unit,
@@ -39,18 +33,27 @@ fun TelaLogin(
     val preferencesUtil = remember { PreferencesUtil(context) }
     val scope = rememberCoroutineScope()
 
-    var login by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var messageError by remember { mutableStateOf<String?>(null) }
 
     fun login(email: String, password: String) {
         scope.launch(Dispatchers.IO) {
-            userDAO.findByEmail(email) { usuario ->
-                if (usuario != null && usuario.password == password) {
-                    preferencesUtil.currentUserId = usuario.id
-                    usuario.id?.let { onSigninClick(it) }
+            userDAO.findByEmail(email) { user ->
+                if (user != null) {
+                    if (user.password == password) {
+                        // Verifica se o ID do usuário não é nulo
+                        user.id?.let {
+                            preferencesUtil.currentUserId = it
+                            onSigninClick(it)
+                        } ?: run {
+                            messageError = "ID de usuário inválido!"
+                        }
+                    } else {
+                        messageError = "Senha inválida!"
+                    }
                 } else {
-                    messageError = "Login ou senha inválidos!"
+                    messageError = "Usuário não encontrado!"
                 }
             }
         }
@@ -73,9 +76,9 @@ fun TelaLogin(
         )
 
         OutlinedTextField(
-            value = login,
-            onValueChange = { login = it },
-            label = { Text(text = "Login") },
+            value = email,
+            onValueChange = { email = it },
+            label = { Text(text = "Email") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp)
         )
@@ -98,7 +101,11 @@ fun TelaLogin(
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)),
             onClick = {
-                login(login, password)
+                if (email.isNotEmpty() && password.isNotEmpty()) {
+                    login(email, password)
+                } else {
+                    messageError = "Por favor, preencha todos os campos."
+                }
             }
         ) {
             Text("Entrar", fontSize = 18.sp, color = Color.White)

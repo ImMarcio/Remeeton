@@ -6,7 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.remeeton.model.data.Space
+import com.example.remeeton.model.data.firestore.Space
+import java.util.Date
 
 @Composable
 fun SpaceCard(
@@ -26,8 +27,20 @@ fun SpaceCard(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            val statusText = if (space.reservedBy == null) "Disponível" else "Reservado"
-            val statusColor = if (space.reservedBy == null) Color.Blue else Color.Red
+            // Verifica se o espaço está reservado
+            val isCurrentlyReserved = space.isReserved
+            val statusText = when {
+                isCurrentlyReserved -> "Reservado"
+                space.availability.isNotEmpty() && space.availability.any { it.startTime > Date() } -> "Disponível"
+                else -> "Indisponível"
+            }
+
+            val statusColor = when {
+                isCurrentlyReserved -> Color.Red // Cor para reservado
+                statusText == "Disponível" -> Color.Blue // Cor para disponível
+                else -> Color.Gray // Cor para indisponível
+            }
+
             Text(
                 text = statusText,
                 color = statusColor,
@@ -37,7 +50,15 @@ fun SpaceCard(
             Spacer(modifier = Modifier.height(8.dp))
 
             Row {
-                if (space.reservedBy == null) {
+                if (isCurrentlyReserved) {
+                    Button(
+                        onClick = onCancelSpace,
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                    ) {
+                        Text("Cancelar Reserva", color = Color.White)
+                    }
+                } else if (statusText == "Disponível") {
                     Button(
                         onClick = onBookSpace,
                         modifier = Modifier.weight(1f),
@@ -46,14 +67,13 @@ fun SpaceCard(
                         Text("Reservar", color = Color.White)
                     }
                 } else {
-                    Button(
-                        onClick = onCancelSpace,
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-                    ) {
-                        Text("Cancelar Reserva", color = Color.White)
-                    }
+                    Text(
+                        text = "Espaço Indisponível",
+                        color = Color.Gray,
+                        modifier = Modifier.weight(1f)
+                    )
                 }
+
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(
                     onClick = onEditSpace,

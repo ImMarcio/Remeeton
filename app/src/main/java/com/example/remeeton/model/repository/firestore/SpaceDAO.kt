@@ -1,11 +1,9 @@
-package com.example.remeeton.model.repository
+package com.example.remeeton.model.repository.firestore
 
-import android.util.Log
-import com.example.remeeton.model.data.Space
+import com.example.remeeton.model.data.firestore.Space
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.firestore.toObjects
-import java.lang.Exception
 
 class SpaceDAO {
     val db = FirebaseFirestore.getInstance()
@@ -79,49 +77,5 @@ class SpaceDAO {
             .addOnFailureListener {
                 callback(null)
             }
-    }
-
-    fun book(spaceId: String, userId: String, callback: (Boolean) -> Unit) {
-        val spaceRef = db.collection("spaces").document(spaceId)
-
-        db.runTransaction { transaction ->
-            val space = transaction.get(spaceRef).toObject<Space>()
-            if (space != null) {
-                if (space.reservedBy != null) {
-                    throw Exception("O espaço já está reservado.")
-                }
-                space.reservedBy = userId
-                transaction.set(spaceRef, space)
-            } else {
-                throw Exception("Espaço não encontrado.")
-            }
-        }.addOnSuccessListener {
-            callback(true)
-        }.addOnFailureListener { e ->
-            callback(false)
-            Log.e("SpaceDAO", "Erro ao reservar espaço: ${e.message}")
-        }
-    }
-
-    fun cancelBooking(spaceId: String, userId: String, callback: (Boolean) -> Unit) {
-        val spaceRef = db.collection("spaces").document(spaceId)
-
-        db.runTransaction { transaction ->
-            val space = transaction.get(spaceRef).toObject<Space>()
-            if (space != null) {
-                if (space.reservedBy != userId) {
-                    throw Exception("O espaço não está reservado por este usuário.")
-                }
-                space.reservedBy = null
-                transaction.set(spaceRef, space)
-            } else {
-                throw Exception("Espaço não encontrado.")
-            }
-        }.addOnSuccessListener {
-            callback(true)
-        }.addOnFailureListener { e ->
-            callback(false)
-            Log.e("SpaceDAO", "Erro ao cancelar reserva: ${e.message}")
-        }
     }
 }

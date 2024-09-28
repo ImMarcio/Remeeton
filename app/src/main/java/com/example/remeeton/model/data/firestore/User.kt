@@ -1,4 +1,4 @@
-package com.example.remeeton.model.data
+package com.example.remeeton.model.data.firestore
 
 import com.google.firebase.firestore.DocumentId
 
@@ -7,6 +7,6 @@ data class User(
     val id: String? = null,
     var name: String = "",
     var email: String = "",
-    val password: String = "",
+    var password: String = "",
     var spaces: List<String> = mutableListOf()
 )
