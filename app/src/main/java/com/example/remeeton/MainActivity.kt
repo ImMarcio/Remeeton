@@ -21,21 +21,26 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.remeeton.model.repository.firestore.SpaceDAO
+import com.example.remeeton.ui.screens.Home
 import com.example.remeeton.ui.screens.space.EditSpaceView
 import com.example.remeeton.ui.screens.space.RegisterSpace
-import com.example.remeeton.ui.screens.space.spaceDao
 import com.example.remeeton.ui.screens.user.EditUserView
-import com.example.remeeton.ui.screens.user.TelaLogin
-import com.example.remeeton.ui.telas.RegisterUser
+import com.example.remeeton.ui.screens.user.Login
+import com.example.remeeton.ui.screens.user.RegisterUser
 import com.example.remeeton.ui.theme.Navegacao1Theme
 import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FirebaseApp.initializeApp(this)
         enableEdgeToEdge()
+
+        val spaceDAO = SpaceDAO()
+
         setContent {
             Navegacao1Theme {
                 val navController = rememberNavController()
@@ -49,14 +54,16 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     NavHost(navController = navController, startDestination = "login") {
                         composable("login") {
-                            TelaLogin(
+                            Login(
                                 modifier = Modifier.padding(innerPadding),
-                                onSigninClick = { usuarioId ->
-                                    navController.navigate("home/$usuarioId")
+                                onSigninClick = { userId ->
+                                    navController.navigate("home/$userId") {
+                                        popUpTo("login") { inclusive = true } // Limpa a pilha de navegação
+                                    }
                                 },
                                 onRegisterClick = {
                                     navController.navigate("register")
-                                },
+                                }
                             )
                         }
                         composable("home/{userId}") { backStackEntry ->
@@ -67,7 +74,9 @@ class MainActivity : ComponentActivity() {
                                     userId = it,
                                     modifier = Modifier.padding(innerPadding),
                                     onLogoffClick = {
-                                        navController.navigate("login")
+                                        navController.navigate("login") {
+                                            popUpTo("home/$userId") { inclusive = true } // Limpa a pilha de navegação
+                                        }
                                     }
                                 )
                             }
@@ -76,10 +85,14 @@ class MainActivity : ComponentActivity() {
                             RegisterUser(
                                 modifier = Modifier.padding(innerPadding),
                                 onRegisterClick = {
-                                    navController.navigate("login")
+                                    navController.navigate("login") {
+                                        popUpTo("register") { inclusive = true } // Limpa a pilha de navegação
+                                    }
                                 },
                                 onReturnClick = {
-                                    navController.navigate("login")
+                                    navController.navigate("login") {
+                                        popUpTo("register") { inclusive = true } // Limpa a pilha de navegação
+                                    }
                                 }
                             )
                         }
@@ -87,29 +100,37 @@ class MainActivity : ComponentActivity() {
                             RegisterSpace(
                                 modifier = Modifier.padding(innerPadding),
                                 onRegisterRoomClick = { userId ->
-                                    navController.navigate("home/$userId")
-                                })
+                                    navController.navigate("home/$userId") {
+                                        popUpTo("home/$userId") { inclusive = true } // Limpa a pilha de navegação
+                                    }
+                                }
+                            )
                         }
                         composable("edit-space/{spaceId}") { backStackEntry ->
                             val spaceId = backStackEntry.arguments?.getString("spaceId")
                             spaceId?.let {
                                 EditSpaceView(
-                                    spaceDao,
+                                    spaceDAO = spaceDAO,
                                     spaceId = it,
                                     onEditClick = { userId ->
-                                        navController.navigate("home/$userId")
-                                    })
+                                        navController.navigate("home/$userId") {
+                                            popUpTo("home/$userId") { inclusive = true } // Limpa a pilha de navegação
+                                        }
+                                    }
+                                )
                             }
                         }
                         composable("edit-user/{userId}") { backStackEntry ->
                             val userId = backStackEntry.arguments?.getString("userId")
                             userId?.let {
                                 EditUserView(
-                                    userId = it,
                                     navController = navController,
                                     onEditClick = { userId ->
-                                        navController.navigate("home/$userId")
-                                    })
+                                        navController.navigate("home/$userId") {
+                                            popUpTo("home/$userId") { inclusive = true } // Limpa a pilha de navegação
+                                        }
+                                    }
+                                )
                             }
                         }
                     }
@@ -126,7 +147,7 @@ fun ShowTopBar(navController: NavController, currentBackStackEntry: NavBackStack
     if (route != "login" && route != "register") {
         TopAppBar(
             title = { Text("RemeetOn", color = MaterialTheme.colorScheme.primary) },
-            Modifier.background(MaterialTheme.colorScheme.secondary),
+            modifier = Modifier.background(MaterialTheme.colorScheme.secondary),
         )
     }
 }
