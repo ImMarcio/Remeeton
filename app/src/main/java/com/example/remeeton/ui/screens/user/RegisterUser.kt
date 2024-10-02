@@ -92,7 +92,6 @@ fun RegisterUser(
                         name = name,
                         email = email,
                         password = password,
-                        spaces = listOf()
                     )
 
                     scope.launch(Dispatchers.IO) {

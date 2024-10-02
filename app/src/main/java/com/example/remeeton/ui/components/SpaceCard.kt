@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.remeeton.model.data.firestore.Space
-import java.util.Date
+import com.google.firebase.Timestamp
 
 @Composable
 fun SpaceCard(
@@ -31,7 +31,7 @@ fun SpaceCard(
             val isCurrentlyReserved = space.isReserved
             val statusText = when {
                 isCurrentlyReserved -> "Reservado"
-                space.availability.isNotEmpty() && space.availability.any { it.startTime > Date() } -> "Disponível"
+                space.availability.isNotEmpty() && space.availability.any { it.startTime > Timestamp.now() } -> "Disponível"
                 else -> "Indisponível"
             }
 

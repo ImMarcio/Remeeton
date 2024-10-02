@@ -1,7 +1,8 @@
 package com.example.remeeton.model.data.firestore
 
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentId
-import java.util.Date
+import java.io.Serializable
 
 data class Space(
     @DocumentId
@@ -21,11 +22,15 @@ data class Space(
     )
 
     data class Availability(
-        val startTime: Date = Date(),
-        val endTime: Date = Date()
-    ) {
+        val startTime: Timestamp  = Timestamp.now(),
+        val endTime: Timestamp  = Timestamp.now()
+    )  : Serializable
+    {
         override fun toString(): String {
-            return "$startTime - $endTime"
+            val formattedStartTime = startTime.toDate()
+            val formattedEndTime = endTime.toDate()
+            return "$formattedStartTime - $formattedEndTime"
         }
     }
 }
+

@@ -75,7 +75,7 @@ class MainActivity : ComponentActivity() {
                                     modifier = Modifier.padding(innerPadding),
                                     onLogoffClick = {
                                         navController.navigate("login") {
-                                            popUpTo("home/$userId") { inclusive = true } // Limpa a pilha de navegação
+                                            popUpTo("home/$userId") { inclusive = true }
                                         }
                                     }
                                 )
@@ -86,12 +86,12 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.padding(innerPadding),
                                 onRegisterClick = {
                                     navController.navigate("login") {
-                                        popUpTo("register") { inclusive = true } // Limpa a pilha de navegação
+                                        popUpTo("register") { inclusive = true }
                                     }
                                 },
                                 onReturnClick = {
                                     navController.navigate("login") {
-                                        popUpTo("register") { inclusive = true } // Limpa a pilha de navegação
+                                        popUpTo("register") { inclusive = true }
                                     }
                                 }
                             )
@@ -101,7 +101,7 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.padding(innerPadding),
                                 onRegisterRoomClick = { userId ->
                                     navController.navigate("home/$userId") {
-                                        popUpTo("home/$userId") { inclusive = true } // Limpa a pilha de navegação
+                                        popUpTo("home/$userId") { inclusive = true }
                                     }
                                 }
                             )
@@ -114,7 +114,7 @@ class MainActivity : ComponentActivity() {
                                     spaceId = it,
                                     onEditClick = { userId ->
                                         navController.navigate("home/$userId") {
-                                            popUpTo("home/$userId") { inclusive = true } // Limpa a pilha de navegação
+                                            popUpTo("home/$userId") { inclusive = true }
                                         }
                                     }
                                 )
