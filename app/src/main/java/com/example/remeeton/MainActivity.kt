@@ -1,9 +1,12 @@
 package com.example.remeeton
 
+import SpaceDAO
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -21,7 +24,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.remeeton.model.repository.firestore.SpaceDAO
 import com.example.remeeton.ui.screens.Home
 import com.example.remeeton.ui.screens.space.EditSpaceView
 import com.example.remeeton.ui.screens.space.RegisterSpace
@@ -33,6 +35,7 @@ import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

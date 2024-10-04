@@ -1,6 +1,3 @@
-package com.example.remeeton.model.repository.firestore
-
-import com.example.remeeton.model.data.firestore.Space
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 
@@ -23,59 +20,22 @@ class SpaceDAO {
                 val spaces = documents.mapNotNull { document ->
                     val spaceData = document.data
 
-                    val availabilityList = spaceData["availability"] as? List<Map<String, Any>>
-                    val availabilities = availabilityList?.mapNotNull { availabilityMap ->
-                        val startTimeMap = availabilityMap["startTime"]
-                        val endTimeMap = availabilityMap["endTime"]
-
-                        val startTime = if (startTimeMap is com.google.firebase.Timestamp) {
-                            startTimeMap
-                        } else {
-                            (startTimeMap as? HashMap<String, Any>)?.let {
-                                val seconds = it["seconds"] as? Long
-                                val nanoseconds = it["nanoseconds"] as? Int
-
-                                if (seconds != null && nanoseconds != null) {
-                                    com.google.firebase.Timestamp(seconds, nanoseconds)
-                                } else {
-                                    null
-                                }
-                            }
-                        }
-
-                        val endTime = if (endTimeMap is com.google.firebase.Timestamp) {
-                            endTimeMap
-                        } else {
-                            (endTimeMap as? HashMap<String, Any>)?.let {
-                                val seconds = it["seconds"] as? Long
-                                val nanoseconds = it["nanoseconds"] as? Int
-
-                                if (seconds != null && nanoseconds != null) {
-                                    com.google.firebase.Timestamp(seconds, nanoseconds)
-                                } else {
-                                    null
-                                }
-                            }
-                        }
-
-
-                        if (startTime != null && endTime != null) {
-                            Space.Availability(startTime, endTime)
-                        } else {
-                            null
-                        }
-                    } ?: emptyList()
-
                     // Verificação de nulos no campo capacity
                     val capacity = (spaceData["capacity"] as? Long)?.toInt() ?: 0  // Usa 0 se for null
 
+
+
                     // Criação do objeto Space manualmente
                     Space(
+                        id = document.id,
                         name = spaceData["name"] as? String ?: "",
                         description = spaceData["description"] as? String ?: "",
-                        location = document.toObject(Space.Location::class.java),
-                        capacity = capacity,  // Usa o valor verificado
-                        availability = availabilities,
+                        address = spaceData["address"] as? String ?: "",
+                        latitude = (spaceData["latitude"] as? Double) ?: 0.0,
+                        longitude = (spaceData["longitude"] as? Double) ?: 0.0,
+                        capacity = capacity,
+                        startTime = spaceData["startTime"] as? String ?: "",
+                        endTime = spaceData["endTime"] as? String ?: "",
                         images = (spaceData["images"] as? List<String>)?.map { it.trim() } ?: emptyList()
                     )
                 }

@@ -1,5 +1,7 @@
 package com.example.remeeton.ui.screens.space
 
+import Space
+import SpaceDAO
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -16,15 +18,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.remeeton.model.data.PreferencesUtil
-import com.example.remeeton.model.data.firestore.Space
-import com.example.remeeton.model.repository.firestore.SpaceDAO
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
-import java.util.Date
 
 val spaceDao = SpaceDAO()
 
@@ -45,9 +41,9 @@ fun RegisterSpace(
     var latitude by remember { mutableStateOf("") }
     var longitude by remember { mutableStateOf("") }
     var capacity by remember { mutableStateOf("") }
-    var availability by remember { mutableStateOf("") }
-    var availabilityList by remember { mutableStateOf(listOf<Space.Availability>()) }
     var images by remember { mutableStateOf("") }
+    val startTime by remember { mutableStateOf("") }
+    val endTime by remember { mutableStateOf("") }
 
     var messageError by remember { mutableStateOf<String?>(null) }
     var messageSuccess by remember { mutableStateOf<String?>(null) }
@@ -126,16 +122,6 @@ fun RegisterSpace(
         Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
-            value = availability,
-            onValueChange = { availability = it },
-            label = { Text(text = "Disponibilidade (HH:mm-HH:mm, separadas por vírgula)") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp)
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
             value = images,
             onValueChange = { images = it },
             label = { Text(text = "Imagens (URLs, separadas por vírgula)") },
@@ -149,56 +135,32 @@ fun RegisterSpace(
             onClick = {
                 if (name.isNotEmpty() && description.isNotEmpty() &&
                     address.isNotEmpty() && latitude.isNotEmpty() && longitude.isNotEmpty() &&
-                    capacity.isNotEmpty() && availability.isNotEmpty()) {
+                    capacity.isNotEmpty() && images.isNotEmpty()) {
 
                     val lat = latitude.toDoubleOrNull()
                     val long = longitude.toDoubleOrNull()
                     val cap = capacity.toIntOrNull()
 
-                    val formatter = DateTimeFormatter.ofPattern("HH:mm")
-                    val availabilities = availability.split(",").mapNotNull { timeRange ->
-                        val times = timeRange.split("-")
-                        try {
-                            if (times.size == 2) {
-                                val startTime = LocalTime.parse(times[0].trim(), formatter)
-                                val endTime = LocalTime.parse(times[1].trim(), formatter)
+                    val space = Space(
+                        name = name,
+                        description = description,
+                        address = address,
+                        latitude = lat ?: 0.0,
+                        longitude = long ?: 0.0,
+                        capacity = cap ?: 0,
+                        startTime = startTime,
+                        endTime = endTime,
+                        images = images.split(",").map { it.trim() },
+                        isReserved = false
+                    )
 
-                                // Converte LocalTime para Timestamp
-                                val startTimestamp = Timestamp(Date.from(startTime.atDate(java.time.LocalDate.now()).atZone(java.time.ZoneId.systemDefault()).toInstant()))
-                                val endTimestamp = Timestamp(Date.from(endTime.atDate(java.time.LocalDate.now()).atZone(java.time.ZoneId.systemDefault()).toInstant()))
-
-                                Space.Availability(startTime = startTimestamp, endTime = endTimestamp)
+                    scope.launch(Dispatchers.IO) {
+                        spaceDao.add(space) { success ->
+                            if (success) {
+                                messageSuccess = "Espaço cadastrado com sucesso!"
+                                currentUserId?.let { onRegisterRoomClick(it) }
                             } else {
-                                null
-                            }
-                        } catch (e: DateTimeParseException) {
-                            null
-                        }
-                    }
-
-                    availabilityList = availabilities
-
-                    if (availabilities.isEmpty()) {
-                        messageError = "Formato de disponibilidade inválido!"
-                    } else {
-                        val location = Space.Location(address, lat ?: 0.0, long ?: 0.0)
-                        val space = Space(
-                            name = name,
-                            description = description,
-                            location = location,
-                            capacity = cap ?: 0,
-                            availability = availabilities,
-                            images = images.split(",").map { it.trim() }
-                        )
-
-                        scope.launch(Dispatchers.IO) {
-                            spaceDao.add(space) { success ->
-                                if (success) {
-                                    messageSuccess = "Espaço cadastrado com sucesso!"
-                                    currentUserId?.let { onRegisterRoomClick(it) }
-                                } else {
-                                    messageError = "Erro ao cadastrar Espaço!"
-                                }
+                                messageError = "Erro ao cadastrar Espaço!"
                             }
                         }
                     }
