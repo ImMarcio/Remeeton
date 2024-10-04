@@ -1,7 +1,9 @@
 package com.example.remeeton.model.repository.firestore
 
+import android.util.Log
 import com.example.remeeton.model.data.firestore.Booking
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 
 class BookingDAO {
     val db = FirebaseFirestore.getInstance()
@@ -25,6 +27,25 @@ class BookingDAO {
                 callback(false)
             }
     }
+
+    fun findBookingsByUserId(userId: String, onResult: (List<Booking>) -> Unit) {
+        Log.d("BookingDAO", "Buscando reservas para o userId: $userId")
+        db.collection("bookings")
+            .whereEqualTo("userId", userId)
+            .get()
+            .addOnSuccessListener { documents ->
+                Log.d("BookingDAO", "Documentos encontrados: ${documents.size()}")
+                val bookings = documents.map { doc ->
+                    doc.toObject(Booking::class.java)
+                }
+                onResult(bookings)
+            }
+            .addOnFailureListener { exception ->
+                Log.e("BookingDAO", "Error getting bookings: ", exception)
+                onResult(emptyList())
+            }
+    }
+
 
     fun findBookingsByUser(userId: String, callback: (List<Booking>) -> Unit) {
         db.collection("bookings")

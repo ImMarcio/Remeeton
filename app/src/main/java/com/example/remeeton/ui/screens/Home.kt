@@ -3,6 +3,7 @@ package com.example.remeeton.ui.screens
 import Space
 import SpaceCard
 import SpaceDAO
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,6 +21,7 @@ import com.example.remeeton.model.data.firestore.Booking
 import com.example.remeeton.model.repository.firestore.BookingDAO
 import com.example.remeeton.ui.components.MessageHandler
 import com.example.remeeton.ui.components.SearchBar
+import com.example.remeeton.ui.screens.booking.BookingsListView
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -37,6 +39,7 @@ fun Home(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val preferencesUtil = remember { PreferencesUtil(context) }
+    val currentUserId = preferencesUtil.currentUserId
 
     var spaces by remember { mutableStateOf<List<Space>>(emptyList()) }
     var searchQuery by remember { mutableStateOf("") }
@@ -46,11 +49,14 @@ fun Home(
     val spaceDAO = SpaceDAO()
     val bookingDAO = BookingDAO()
 
+
     fun loadSpaces() {
         scope.launch(Dispatchers.IO) {
             spaceDAO.findAll { returnedSpaces -> spaces = returnedSpaces }
         }
     }
+
+
     fun String.toTimestamp(): Timestamp {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val date = dateFormat.parse(this)
@@ -95,6 +101,7 @@ fun Home(
                 if (success) {
                     messageSuccess = "Espaço reservado com sucesso."
                     loadSpaces() // Atualiza a lista de espaços após a reserva
+
                 } else {
                     messageError = "Falha ao reservar o espaço."
                 }
@@ -123,8 +130,12 @@ fun Home(
     }
 
     LaunchedEffect(Unit) {
+
         loadSpaces()
+
+
     }
+
 
     LaunchedEffect(messageSuccess, messageError) {
         messageSuccess?.let {
@@ -137,7 +148,11 @@ fun Home(
         }
     }
 
-    Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
+
+
+    Column(modifier = modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
         SearchBar(
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it }
@@ -167,6 +182,7 @@ fun Home(
                     onEditSpace = { navController.navigate("edit-space/${space.id}") }
                 )
             }
+
         }
     }
 }
