@@ -4,13 +4,13 @@ RemeetOn é um aplicativo Android desenvolvido em Kotlin que permite aos usuári
 
 ### Funcionalidades Principais
 
-* **Autenticação de Usuário:** Os usuários podem se cadastrar e fazer login no aplicativo usando suas credenciais de e-mail e senha.
-* **Cadastro de Espaços:** Usuários autenticados podem cadastrar novos espaços, fornecendo informações como nome, descrição, endereço, capacidade, horários de funcionamento e fotos.
-* **Busca e Filtro de Espaços:**  Encontre facilmente o espaço ideal utilizando a barra de pesquisa para filtrar por nome.
-* **Reserva de Espaços:** Visualize a disponibilidade dos espaços e faça reservas para o dia e horário desejados.
-* **Gerenciamento de Reservas:** Acompanhe suas reservas e cancele-as, se necessário.
-* **Edição de Perfil de Usuário:** Os usuários podem atualizar seus perfis.
-* **Exclusão de Usuário:** Os usuários podem excluir suas contas.
+* **Autenticação de Usuário:** os usuários podem se cadastrar e fazer login no aplicativo usando suas credenciais de e-mail e senha.
+* **Cadastro de Espaços:** usuários autenticados podem cadastrar novos espaços, fornecendo informações como nome, descrição, endereço, capacidade, horários de funcionamento e fotos.
+* **Busca e Filtro de Espaços:**  encontre facilmente o espaço ideal utilizando a barra de pesquisa para filtrar por nome.
+* **Reserva de Espaços:** visualize a disponibilidade dos espaços e faça reservas para o dia e horário desejados.
+* **Gerenciamento de Reservas:** acompanhe suas reservas e cancele-as, se necessário.
+* **Edição de Perfil de Usuário:** os usuários podem atualizar seus perfis.
+* **Exclusão de Usuário:** os usuários podem excluir suas contas.
 
 ### Tecnologia Utilizada
 
@@ -21,13 +21,13 @@ RemeetOn é um aplicativo Android desenvolvido em Kotlin que permite aos usuári
 
 ### Telas Principais
 
-* **Tela de Login:** Permite que usuários existentes façam login com suas credenciais ou se direcionem para a tela de cadastro.
-* **Tela de Cadastro de Usuário:** Coleta nome, e-mail e senha para criar uma nova conta de usuário.
-* **Tela Inicial:** Exibe os espaços disponíveis, permitindo busca, visualização de detalhes e reserva.
-* **Tela de Cadastro de Espaço:** Coleta informações detalhadas sobre o espaço, incluindo nome, descrição, localização, capacidade, fotos e horários de funcionamento.
-* **Tela de Edição de Espaço:** Permite editar as informações de um espaço previamente cadastrado.
-* **Tela de Reservas:** Exibe as reservas do usuário, permitindo o cancelamento, se necessário.
-* **Tela de Edição de Usuário:** Permite que os usuários atualizem seus perfis, incluindo nome e e-mail.
+* **Tela de Login:** permite que usuários existentes façam login com suas credenciais ou se direcionem para a tela de cadastro.
+* **Tela de Cadastro de Usuário:** coleta nome, e-mail e senha para criar uma nova conta de usuário.
+* **Tela Inicial:** exibe os espaços disponíveis, permitindo busca, visualização de detalhes e reserva.
+* **Tela de Cadastro de Espaço:** coleta informações detalhadas sobre o espaço, incluindo nome, descrição, localização, capacidade, fotos e horários de funcionamento.
+* **Tela de Edição de Espaço:** permite editar as informações de um espaço previamente cadastrado.
+* **Tela de Reservas:** exibe as reservas do usuário, permitindo o cancelamento, se necessário.
+* **Tela de Edição de Usuário:** permite que os usuários atualizem seus perfis, incluindo nome e e-mail.
 
 ### Próximos Passos
 
@@ -52,4 +52,7 @@ git clone https://github.com/seu-usuario/remeeton.git
 
 Contribuições são bem-vindas! Sinta-se à vontade para abrir um problema ou enviar um pull request.
 
+### Autores
 
+- [Allan Amâncio](https://github.com/AllanSmithll)
+- [Márcio José](https://github.com/ImMarcio)
