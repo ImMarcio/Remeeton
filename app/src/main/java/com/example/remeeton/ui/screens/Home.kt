@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -34,6 +35,7 @@ fun Home(
     navController: NavController,
     modifier: Modifier = Modifier,
     onLogoffClick: () -> Unit,
+    onNavigateToBookings: () -> Unit,
     userId: String
 ) {
     val context = LocalContext.current
@@ -157,7 +159,7 @@ fun Home(
             searchQuery = searchQuery,
             onSearchQueryChange = { searchQuery = it }
         )
-
+    Row {
         Button(
             onClick = { navController.navigate("register-space") },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)),
@@ -167,6 +169,19 @@ fun Home(
             Spacer(modifier = Modifier.width(4.dp))
             Text("Adicionar")
         }
+        Spacer(modifier = Modifier.width(4.dp))
+
+        Button(
+            onClick = { navController.navigate("bookings") },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF18EE00)),
+            modifier = Modifier.height(56.dp)
+        ) {
+            Icon(Icons.Filled.Menu, contentDescription = "Suas Reservas")
+            Spacer(modifier = Modifier.width(4.dp))
+            Text("Ver Reservas")
+        }
+    }
+
 
         MessageHandler(
             messageSuccess = messageSuccess,

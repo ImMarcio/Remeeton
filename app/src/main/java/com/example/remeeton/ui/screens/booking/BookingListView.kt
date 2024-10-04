@@ -2,11 +2,17 @@ package com.example.remeeton.ui.screens.booking
 
 import android.util.Log
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -68,13 +74,42 @@ fun BookingItem(booking: Booking) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp), // Adiciona uma sombra ao cartão
+        shape = MaterialTheme.shapes.medium // Forma do cartão
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Reserva ID: ${booking.id}")
-            Text(text = "Espaço: ${booking.space.name}")
-            Text(text = "Data de Início: ${booking.startTime}")
-            Text(text = "Data de Término: ${booking.endTime}")
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+        ) {
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Nome do Espaço
+            Text(
+                text = "Nome do Espaço: ${booking.space.name}",
+                style = MaterialTheme.typography.titleMedium, // Estilo de texto
+                color = MaterialTheme.colorScheme.primary // Cor do texto
+            )
+
+            Spacer(modifier = Modifier.height(8.dp)) // Espaçamento entre os textos
+
+            // Data de Início
+            Text(
+                text = "Data de Início: ${booking.startTime}",
+                style = MaterialTheme.typography.bodyMedium, // Estilo de texto
+                color = MaterialTheme.colorScheme.onSurface // Cor do texto
+            )
+
+            // Data de Término
+            Text(
+                text = "Data de Término: ${booking.endTime}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+
         }
     }
 }
