@@ -1,7 +1,9 @@
 package com.example.remeeton.model.repository.firestore
 
+import android.util.Log
 import com.example.remeeton.model.data.firestore.Booking
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 
 class BookingDAO {
     val db = FirebaseFirestore.getInstance()
@@ -25,6 +27,8 @@ class BookingDAO {
                 callback(false)
             }
     }
+
+
 
     fun findBookingsByUser(userId: String, callback: (List<Booking>) -> Unit) {
         db.collection("bookings")

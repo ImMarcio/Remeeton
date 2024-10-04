@@ -25,6 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.remeeton.ui.screens.Home
+import com.example.remeeton.ui.screens.booking.BookingsListView
 import com.example.remeeton.ui.screens.space.EditSpaceView
 import com.example.remeeton.ui.screens.space.RegisterSpace
 import com.example.remeeton.ui.screens.user.EditUserView
@@ -80,6 +81,9 @@ class MainActivity : ComponentActivity() {
                                         navController.navigate("login") {
                                             popUpTo("home/$userId") { inclusive = true }
                                         }
+                                    },
+                                    onNavigateToBookings = {
+                                        navController.navigate("bookings")
                                     }
                                 )
                             }
@@ -135,6 +139,9 @@ class MainActivity : ComponentActivity() {
                                     }
                                 )
                             }
+                        }
+                        composable("bookings") { // Rota para a tela de reservas
+                            BookingsListView()
                         }
                     }
                 }
