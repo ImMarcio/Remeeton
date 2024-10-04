@@ -18,6 +18,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -54,7 +55,7 @@ class MainActivity : ComponentActivity() {
                     topBar = {
                         ShowTopBar(navController = navController, currentBackStackEntry = currentBackStackEntry)
                     },
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize().padding(top = 8.dp),
                 ) { innerPadding ->
                     NavHost(navController = navController, startDestination = "login") {
                         composable("login") {
