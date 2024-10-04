@@ -1,5 +1,7 @@
 package com.example.remeeton.ui.screens.space
 
+import Space
+import SpaceDAO
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -9,8 +11,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.remeeton.model.data.PreferencesUtil
-import com.example.remeeton.model.data.firestore.Space
-import com.example.remeeton.model.repository.firestore.SpaceDAO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -32,8 +32,8 @@ fun EditSpaceView(
     var latitude by remember { mutableStateOf("") }
     var longitude by remember { mutableStateOf("") }
     var capacity by remember { mutableStateOf("") }
-    var availability by remember { mutableStateOf("") }
-    var availabilityList by remember { mutableStateOf<List<Space.Availability>>(emptyList()) }
+    var startTime by remember { mutableStateOf("") }
+    var endTime by remember { mutableStateOf("") }
     var images by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
 
@@ -43,14 +43,13 @@ fun EditSpaceView(
             if (result != null) {
                 name = result.name
                 description = result.description
-                address = result.location.address
-                latitude = result.location.latitude.toString()
-                longitude = result.location.longitude.toString()
+                address = result.address
+                latitude = result.latitude.toString()
+                longitude = result.longitude.toString()
                 capacity = result.capacity.toString()
-                availability = result.availability.joinToString(", ")
+                startTime = result.startTime // Convertendo Timestamp para String
+                endTime = result.endTime
                 images = result.images.joinToString(", ")
-
-                availability = availabilityList.joinToString(", ") { it.toString() }
             }
         }
     }
@@ -123,9 +122,18 @@ fun EditSpaceView(
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            value = availability,
-            onValueChange = { availability = it },
-            label = { Text("Disponibilidade (HH:mm-HH:mm)") },
+            value = startTime,
+            onValueChange = { startTime = it },
+            label = { Text("Horário de Início (HH:mm)") },
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = endTime,
+            onValueChange = { endTime = it },
+            label = { Text("Horário de Término (HH:mm)") },
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -149,7 +157,7 @@ fun EditSpaceView(
             onClick = {
                 if (name.isBlank() || description.isBlank() || address.isBlank() ||
                     latitude.isBlank() || longitude.isBlank() || capacity.isBlank() ||
-                    availability.isBlank() || images.isBlank()) {
+                    startTime.isBlank() || endTime.isBlank() || images.isBlank()) {
                     errorMessage = "Todos os campos devem ser preenchidos"
                 } else {
                     space?.let {
@@ -157,9 +165,12 @@ fun EditSpaceView(
                             val newData = mapOf(
                                 "name" to name,
                                 "description" to description,
-                                "location" to Space.Location(address, latitude.toDouble(), longitude.toDouble()),
+                                "address" to address,
+                                "latitude" to latitude.toDouble(),
+                                "longitude" to longitude.toDouble(),
                                 "capacity" to capacity.toInt(),
-                                "availability" to availability.split(",").map { it.trim() },
+                                "startTime" to startTime, // Placeholder
+                                "endTime" to endTime, // Placeholder
                                 "images" to images.split(",").map { it.trim() }
                             )
                             spaceDAO.edit(spaceId, newData) { success ->

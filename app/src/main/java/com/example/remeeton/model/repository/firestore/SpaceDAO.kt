@@ -1,9 +1,5 @@
-package com.example.remeeton.model.repository.firestore
-
-import com.example.remeeton.model.data.firestore.Space
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
-import com.google.firebase.firestore.toObjects
 
 class SpaceDAO {
     val db = FirebaseFirestore.getInstance()
@@ -20,8 +16,29 @@ class SpaceDAO {
 
     fun findAll(callback: (List<Space>) -> Unit) {
         db.collection("spaces").get()
-            .addOnSuccessListener { document ->
-                val spaces = document.toObjects<Space>()
+            .addOnSuccessListener { documents ->
+                val spaces = documents.mapNotNull { document ->
+                    val spaceData = document.data
+
+                    // Verificação de nulos no campo capacity
+                    val capacity = (spaceData["capacity"] as? Long)?.toInt() ?: 0  // Usa 0 se for null
+
+
+
+                    // Criação do objeto Space manualmente
+                    Space(
+                        id = document.id,
+                        name = spaceData["name"] as? String ?: "",
+                        description = spaceData["description"] as? String ?: "",
+                        address = spaceData["address"] as? String ?: "",
+                        latitude = (spaceData["latitude"] as? Double) ?: 0.0,
+                        longitude = (spaceData["longitude"] as? Double) ?: 0.0,
+                        capacity = capacity,
+                        startTime = spaceData["startTime"] as? String ?: "",
+                        endTime = spaceData["endTime"] as? String ?: "",
+                        images = (spaceData["images"] as? List<String>)?.map { it.trim() } ?: emptyList()
+                    )
+                }
                 callback(spaces)
             }
             .addOnFailureListener {

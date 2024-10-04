@@ -1,13 +1,9 @@
-package com.example.remeeton.ui.components
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.remeeton.model.data.firestore.Space
-import java.util.Date
 
 @Composable
 fun SpaceCard(
@@ -29,16 +25,16 @@ fun SpaceCard(
 
             // Verifica se o espaço está reservado
             val isCurrentlyReserved = space.isReserved
-            val statusText = when {
-                isCurrentlyReserved -> "Reservado"
-                space.availability.isNotEmpty() && space.availability.any { it.startTime > Date() } -> "Disponível"
-                else -> "Indisponível"
+            val statusText = if (isCurrentlyReserved) {
+                "Reservado"
+            } else {
+                "Disponível"
             }
 
-            val statusColor = when {
-                isCurrentlyReserved -> Color.Red // Cor para reservado
-                statusText == "Disponível" -> Color.Blue // Cor para disponível
-                else -> Color.Gray // Cor para indisponível
+            val statusColor = if (isCurrentlyReserved) {
+                Color.Red
+            } else {
+                Color.Gray
             }
 
             Text(
@@ -58,20 +54,16 @@ fun SpaceCard(
                     ) {
                         Text("Cancelar Reserva", color = Color.White)
                     }
-                } else if (statusText == "Disponível") {
-                    Button(
-                        onClick = onBookSpace,
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
-                    ) {
-                        Text("Reservar", color = Color.White)
-                    }
                 } else {
-                    Text(
-                        text = "Espaço Indisponível",
-                        color = Color.Gray,
-                        modifier = Modifier.weight(1f)
-                    )
+                    Button(
+                        onClick = onBookSpace ,
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                    ){
+                        Text("Reservar", color = Color.Blue)
+                    }
+
+
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))

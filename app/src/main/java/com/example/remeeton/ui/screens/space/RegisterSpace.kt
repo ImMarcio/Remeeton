@@ -1,6 +1,10 @@
 package com.example.remeeton.ui.screens.space
 
+import Space
+import SpaceDAO
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,13 +18,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.remeeton.model.data.PreferencesUtil
-import com.example.remeeton.model.data.firestore.Space
-import com.example.remeeton.model.repository.firestore.SpaceDAO
+import com.google.firebase.Timestamp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 val spaceDao = SpaceDAO()
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RegisterSpace(
     modifier: Modifier = Modifier,
@@ -37,8 +41,9 @@ fun RegisterSpace(
     var latitude by remember { mutableStateOf("") }
     var longitude by remember { mutableStateOf("") }
     var capacity by remember { mutableStateOf("") }
-    var availability by remember { mutableStateOf("") } // Formato "HH:mm-HH:mm"
-    var images by remember { mutableStateOf("") } // URLs das imagens
+    var images by remember { mutableStateOf("") }
+    val startTime by remember { mutableStateOf("") }
+    val endTime by remember { mutableStateOf("") }
 
     var messageError by remember { mutableStateOf<String?>(null) }
     var messageSuccess by remember { mutableStateOf<String?>(null) }
@@ -117,16 +122,6 @@ fun RegisterSpace(
         Spacer(modifier = Modifier.height(12.dp))
 
         OutlinedTextField(
-            value = availability,
-            onValueChange = { availability = it },
-            label = { Text(text = "Disponibilidade (HH:mm-HH:mm)") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp)
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
             value = images,
             onValueChange = { images = it },
             label = { Text(text = "Imagens (URLs, separadas por vírgula)") },
@@ -140,22 +135,23 @@ fun RegisterSpace(
             onClick = {
                 if (name.isNotEmpty() && description.isNotEmpty() &&
                     address.isNotEmpty() && latitude.isNotEmpty() && longitude.isNotEmpty() &&
-                    capacity.isNotEmpty() && availability.isNotEmpty()) {
+                    capacity.isNotEmpty() && images.isNotEmpty()) {
 
-                    // Parse latitude and longitude to Double
                     val lat = latitude.toDoubleOrNull()
                     val long = longitude.toDoubleOrNull()
                     val cap = capacity.toIntOrNull()
-                    val availabilities = availability.split(",").map { it.trim() } // Divide as disponibilidades
 
-                    val location = Space.Location(address, lat ?: 0.0, long ?: 0.0)
                     val space = Space(
                         name = name,
                         description = description,
-                        location = location,
+                        address = address,
+                        latitude = lat ?: 0.0,
+                        longitude = long ?: 0.0,
                         capacity = cap ?: 0,
-                        availability = availabilities.map { Space.Availability() }, // Modifique isso para incluir lógica de disponibilidade
-                        images = images.split(",").map { it.trim() } // Divide as imagens
+                        startTime = startTime,
+                        endTime = endTime,
+                        images = images.split(",").map { it.trim() },
+                        isReserved = false
                     )
 
                     scope.launch(Dispatchers.IO) {

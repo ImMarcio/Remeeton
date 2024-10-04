@@ -1,5 +1,8 @@
 package com.example.remeeton.ui.screens
 
+import Space
+import SpaceCard
+import SpaceDAO
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,18 +17,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.remeeton.model.data.PreferencesUtil
 import com.example.remeeton.model.data.firestore.Booking
-import com.example.remeeton.model.data.firestore.Space
-import com.example.remeeton.model.data.firestore.User
 import com.example.remeeton.model.repository.firestore.BookingDAO
-import com.example.remeeton.model.repository.firestore.SpaceDAO
-import com.example.remeeton.model.repository.firestore.UserDAO
 import com.example.remeeton.ui.components.MessageHandler
 import com.example.remeeton.ui.components.SearchBar
-import com.example.remeeton.ui.components.SpaceCard
+import com.google.firebase.Timestamp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.Date
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
 fun Home(
@@ -51,47 +51,56 @@ fun Home(
             spaceDAO.findAll { returnedSpaces -> spaces = returnedSpaces }
         }
     }
+    fun String.toTimestamp(): Timestamp {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val date = dateFormat.parse(this)
+        return Timestamp(date)
+    }
 
     fun bookSpace(space: Space) {
-        if (space.availability.isEmpty()) {
-            messageError = "Esse espaço não está disponível para reserva."
-            return
-        }
+        // Verifica a disponibilidade do espaço baseado em horários
+        val currentTime = Timestamp.now()
+        val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val currentHour = sdf.format(currentTime.toDate())
 
-        val newStartTime = Date()
-        val newEndTime = Date(newStartTime.time + 3600000)
+//        if (currentHour < space.startTime || currentHour > space.endTime) {
+//            messageError = "Este espaço não está disponível neste horário."
+//            return
+//        }
+
+        val newStartTime = currentTime
+        val newEndTime = Timestamp(Date(newStartTime.toDate().time + 3600000 )) //3600000  Reserva por 1 hora
 
         bookingDAO.findBookingsBySpace(space.id) { existingBookings ->
             val isOverlapping = existingBookings.any { booking ->
-                (newStartTime < booking.endTime && newEndTime > booking.startTime)
+                val bookingStart = booking.startTime.toTimestamp()
+                val bookingEnd = booking.endTime.toTimestamp()
+                (newStartTime.toDate() < bookingEnd.toDate() && newEndTime.toDate() > bookingStart.toDate())
             }
 
-            if (isOverlapping) {
-                messageError = "Este espaço já está reservado nesse horário."
-                return@findBookingsBySpace
-            }
+//            if (isOverlapping) {
+//                messageError = "Este espaço já está reservado nesse horário."
+//                return@findBookingsBySpace
+//            }
 
             val booking = Booking(
                 id = "",
                 space = Booking.SpaceReference(id = space.id, name = space.name),
                 user = Booking.UserReference(id = userId, name = preferencesUtil.currentUserId ?: "Usuário"),
-                startTime = newStartTime,
-                endTime = newEndTime,
-                status = "reservado"
+                startTime = sdf.format(newStartTime.toDate()),
+                endTime = sdf.format(newEndTime.toDate())
             )
 
             bookingDAO.addBooking(booking) { success ->
                 if (success) {
                     messageSuccess = "Espaço reservado com sucesso."
-                    space.isReserved = true
-                    loadSpaces()
+                    loadSpaces() // Atualiza a lista de espaços após a reserva
                 } else {
                     messageError = "Falha ao reservar o espaço."
                 }
             }
         }
     }
-
 
     fun cancelBooking(spaceId: String) {
         bookingDAO.findBookingsByUser(userId) { bookings ->
@@ -101,7 +110,7 @@ fun Home(
                     bookingDAO.cancelBooking(booking.id) { success ->
                         if (success) {
                             messageSuccess = "Reserva cancelada com sucesso."
-                            loadSpaces()
+                            loadSpaces() // Atualiza a lista de espaços após o cancelamento
                         } else {
                             messageError = "Falha ao cancelar a reserva."
                         }
