@@ -28,23 +28,6 @@ class BookingDAO {
             }
     }
 
-    fun findBookingsByUserId(userId: String, onResult: (List<Booking>) -> Unit) {
-        Log.d("BookingDAO", "Buscando reservas para o userId: $userId")
-        db.collection("bookings")
-            .whereEqualTo("userId", userId)
-            .get()
-            .addOnSuccessListener { documents ->
-                Log.d("BookingDAO", "Documentos encontrados: ${documents.size()}")
-                val bookings = documents.map { doc ->
-                    doc.toObject(Booking::class.java)
-                }
-                onResult(bookings)
-            }
-            .addOnFailureListener { exception ->
-                Log.e("BookingDAO", "Error getting bookings: ", exception)
-                onResult(emptyList())
-            }
-    }
 
 
     fun findBookingsByUser(userId: String, callback: (List<Booking>) -> Unit) {

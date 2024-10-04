@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
+    implementation("io.coil-kt:coil-compose:2.3.0")
 
     // necessário para o Firebase/Firestore
     implementation(platform(libs.firebase.bom))

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 
 @Composable
 fun SpaceCard(
@@ -17,6 +18,15 @@ fun SpaceCard(
         shape = MaterialTheme.shapes.medium
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+            
+            AsyncImage(
+                model = space.images.firstOrNull(), // Pega a primeira imagem do array
+                contentDescription = "Imagem do espaço: ${space.name}",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp) // Defina a altura que desejar para a imagem
+            )
+
             Text(
                 text = space.name,
                 style = MaterialTheme.typography.titleMedium,
