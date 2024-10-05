@@ -2,6 +2,8 @@
 
 RemeetOn é um aplicativo Android desenvolvido em Kotlin que permite aos usuários encontrar e reservar espaços para diversos fins. O aplicativo se conecta ao Firebase para autenticação de usuários, armazenamento de dados e gerenciamento de reservas.
 
+![Preview da tela principal](app/src/main/assets/preview.png)
+
 ### Funcionalidades Principais
 
 * **Autenticação de Usuário:** os usuários podem se cadastrar e fazer login no aplicativo usando suas credenciais de e-mail e senha.
