@@ -43,7 +43,7 @@ RemeetOn é um aplicativo Android desenvolvido em Kotlin que permite aos usuári
 
 1. Clone este repositório para sua máquina local.
 ```
-git clone https://github.com/seu-usuario/remeeton.git
+git clone https://github.com/ImMarcio/Remeeton.git
 ```
 2. Abra o projeto no Android Studio.
 3. Crie um novo projeto no Firebase e adicione o arquivo `google-services.json` ao seu projeto.
